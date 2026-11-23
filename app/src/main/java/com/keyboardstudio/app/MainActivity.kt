@@ -196,6 +196,18 @@ private val names = listOf(
  "Peach Bloom","Arctic Wave","Electric Lilac","Coral Crush","Golden Hour","Bubblegum","Blue Lagoon","Grape Soda","Mango Splash","Emerald",
  "Candy Floss","Midnight Pop","Lavender Mist","Tropical","Cherry Ice","Lime Light","Aurora","Cosmic Pink","Citrus Mix","Dreamy Purple"
 )
+private val translatedThemeNames = mapOf(
+ "ქართული" to listOf("ბამბის კანფეტი","ოკეანის ტალღა","მზის ჩასვლა","პიტნის ნათება","კენკრა","ლიმონათი","ვარდის კვარცი","აკვა ოცნება","იისფერი ცა","მანდარინი","ატმის ყვავილი","არქტიკული ტალღა","ელექტრო იასამნისფერი","მარჯნის აფეთქება","ოქროს საათი","საღეჭი რეზინი","ლურჯი ლაგუნა","ყურძნის სოდა","მანგოს შხეფი","ზურმუხტი","ბამბის ნაზი","შუაღამის ნათება","ლავანდის ნისლი","ტროპიკული","ალუბლის ყინული","ლაიმის ნათება","აურორა","კოსმოსური ვარდისფერი","ციტრუსის მიქსი","ოცნების იისფერი"),
+ "Русский" to listOf("Сахарная вата","Океанская волна","Закат","Мятное сияние","Ягода","Лимонад","Розовый кварц","Аква-мечта","Фиолетовое небо","Мандарин","Персиковый цвет","Арктическая волна","Электрическая сирень","Коралловый всплеск","Золотой час","Жвачка","Голубая лагуна","Виноградная газировка","Манговый всплеск","Изумруд","Сахарная нить","Полуночное сияние","Лавандовый туман","Тропики","Вишнёвый лёд","Лаймовый свет","Аврора","Космический розовый","Цитрусовый микс","Мечтательный фиолетовый"),
+ "Deutsch" to listOf("Zuckerwatte","Ozean-Pop","Sonnenuntergang","Minzleuchten","Beere","Limonade","Rosenquarz","Aqua-Traum","Violetter Himmel","Mandarine","Pfirsichblüte","Arktische Welle","Elektrisches Flieder","Korallenrausch","Goldene Stunde","Kaugummi","Blaue Lagune","Traubenlimonade","Mango-Spritzer","Smaragd","Zuckerflocke","Mitternachtsglanz","Lavendelnebel","Tropisch","Kirsch-Eis","Limettenlicht","Aurora","Kosmisches Rosa","Zitrusmix","Traumhaftes Violett"),
+ "Español" to listOf("Algodón de azúcar","Ola del océano","Atardecer","Brillo de menta","Frutos rojos","Limonada","Cuarzo rosa","Sueño aqua","Cielo violeta","Mandarina","Flor de melocotón","Ola ártica","Lila eléctrico","Explosión coral","Hora dorada","Chicle","Laguna azul","Refresco de uva","Toque de mango","Esmeralda","Nube de azúcar","Brillo de medianoche","Niebla lavanda","Tropical","Hielo de cereza","Luz lima","Aurora","Rosa cósmico","Mezcla cítrica","Violeta de ensueño"),
+ "Français" to listOf("Barbe à papa","Vague océanique","Coucher de soleil","Éclat menthe","Baies","Limonade","Quartz rose","Rêve aqua","Ciel violet","Mandarine","Fleur de pêche","Vague arctique","Lilas électrique","Éclat corail","Heure dorée","Chewing-gum","Lagon bleu","Soda raisin","Éclaboussure mangue","Émeraude","Nuage sucré","Éclat de minuit","Brume lavande","Tropical","Glace cerise","Lumière citron vert","Aurore","Rose cosmique","Mélange d’agrumes","Violet rêveur"),
+ "Türkçe" to listOf("Pamuk şeker","Okyanus dalgası","Gün batımı","Nane parıltısı","Meyve","Limonata","Pembe kuvars","Aqua rüyası","Mor gökyüzü","Mandalina","Şeftali çiçeği","Kutup dalgası","Elektrik lila","Mercan patlaması","Altın saat","Sakız","Mavi lagün","Üzüm sodası","Mango esintisi","Zümrüt","Şeker bulutu","Gece yarısı parıltısı","Lavanta sisi","Tropik","Kiraz buzu","Lime ışığı","Aurora","Kozmik pembe","Narenciye karışımı","Rüya moru"),
+ "العربية" to listOf("غزل البنات","موج المحيط","غروب الشمس","توهج النعناع","التوت","ليمونادة","كوارتز وردي","حلم مائي","سماء بنفسجية","يوسفي","زهرة الخوخ","موجة قطبية","ليلكي كهربائي","مرجان متوهج","الساعة الذهبية","علكة","البحيرة الزرقاء","مشروب العنب","لمسة مانجو","زمرد","سحابة سكر","وهج منتصف الليل","ضباب اللافندر","استوائي","كرز مثلج","ضوء الليمون","الشفق","وردي كوني","مزيج الحمضيات","بنفسجي حالم")
+)
+private fun localizedThemeName(language:String,index:Int):String =
+ translatedThemeNames[language]?.getOrNull(index) ?: names.getOrNull(index) ?: "Theme"
+
 private val themes = names.mapIndexed { i, n ->
  val key = listOf(Color(0xFFFFF1FA),Color(0xFFEAFBFF),Color(0xFFFFF3E9),Color(0xFFE9FFF7),Color(0xFFF4EBFF))[i % 5]
  KTheme(n, palettes[i % palettes.size], key)
@@ -233,9 +245,24 @@ private fun Studio(openSettings: () -> Unit) {
   }
  }
  fun saveDesign() {
-  saved = saved + selected.toString()
-  prefs.edit().putStringSet("saved",saved).putInt("selected",selected).putFloat("height",keyHeight).putFloat("rounding",rounding).putInt("keyColor",keyColorIndex).apply()
+  val id = System.currentTimeMillis().toString()
+  val snapshot = listOf(selected,keyColorIndex,keyHeight,rounding).joinToString(",")
+  prefs.edit().putString("design_$id",snapshot).apply()
+  saved = saved + id
+  prefs.edit().putStringSet("saved",saved).apply()
  }
+ fun loadDesign(id:String) {
+  val parts = prefs.getString("design_$id",null)?.split(",")
+  selected = (parts?.getOrNull(0)?.toIntOrNull() ?: id.toIntOrNull() ?: selected).coerceIn(0,29)
+  if(parts != null && parts.size >= 4) {
+   keyColorIndex = (parts[1].toIntOrNull() ?: keyColorIndex).coerceIn(0,9)
+   keyHeight = (parts[2].toFloatOrNull() ?: keyHeight).coerceIn(30f,54f)
+   rounding = (parts[3].toFloatOrNull() ?: rounding).coerceIn(2f,18f)
+  }
+  prefs.edit().putInt("selected",selected).putInt("keyColor",keyColorIndex)
+   .putFloat("height",keyHeight).putFloat("rounding",rounding).apply()
+ }
+
  Scaffold(containerColor=Color(0xFFFFF9FE), bottomBar={
   NavigationBar(containerColor=Color.White) {
    listOf("Themes","Customize","My Designs","Settings").forEach { item ->
@@ -261,9 +288,10 @@ private fun Studio(openSettings: () -> Unit) {
     "Settings" -> SettingsCard(openSettings,language,{ language=it; prefs.edit().putString("language",it).apply() },{ selected=0; keyHeight=39f; rounding=9f; keyColorIndex=0; photoUri=null; prefs.edit().putInt("selected",0).putFloat("height",39f).putFloat("rounding",9f).putInt("keyColor",0).remove("photo").apply() })
     "My Designs" -> {
      if(saved.isEmpty()) InfoCard(language,"No saved designs yet","Open Customize, choose your colors and tap Save design.")
-     else saved.sorted().forEach { id ->
-      val i=id.toIntOrNull()?.coerceIn(0,29) ?: 0
-      ThemeRow(themes[i],selected==i,language) { selected=i; prefs.edit().putInt("selected",i).apply(); tab="Customize" }
+     else saved.sortedDescending().forEach { id ->
+      val stored = prefs.getString("design_$id",null)?.split(",")
+      val i=(stored?.getOrNull(0)?.toIntOrNull() ?: id.toIntOrNull() ?: 0).coerceIn(0,29)
+      ThemeRow(themes[i],selected==i,language) { loadDesign(id); tab="Customize" }
       Spacer(Modifier.height(9.dp))
      }
     }
@@ -360,7 +388,7 @@ private fun ThemeRow(theme:KTheme,selected:Boolean,language:String,onClick:()->U
  Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(Color.White).clickable(onClick=onClick).padding(12.dp),verticalAlignment=Alignment.CenterVertically) {
   Box(Modifier.size(48.dp).clip(RoundedCornerShape(14.dp)).background(Brush.linearGradient(theme.colors)))
   Spacer(Modifier.width(12.dp))
-  Column(Modifier.weight(1f)) { Text(theme.name,fontWeight=FontWeight.Bold,color=Color(0xFF302840)); Text(tx(language,"Colorful gradient theme"),fontSize=12.sp,color=Color(0xFF92889F)) }
+  Column(Modifier.weight(1f)) { Text(localizedThemeName(language,names.indexOf(theme.name)),fontWeight=FontWeight.Bold,color=Color(0xFF302840)); Text(tx(language,"Colorful gradient theme"),fontSize=12.sp,color=Color(0xFF92889F)) }
   if(selected) Icon(Icons.Rounded.Check,null,tint=Color(0xFF7956E8))
  }
 }
