@@ -3,6 +3,7 @@ package com.keyboardstudio.app
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.inputmethodservice.InputMethodService
+import android.content.SharedPreferences
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -11,6 +12,27 @@ import android.widget.TextView
 import kotlin.math.roundToInt
 
 class KeyboardService : InputMethodService() {
+    private lateinit var keyboardPrefs: SharedPreferences
+
+    private val preferenceListener =
+        SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key in setOf("selected", "keyColor", "height", "rounding", "language") &&
+                inputView != null && currentInputConnection != null
+            ) {
+                refreshKeyboard()
+            }
+        }
+
+    override fun onCreate() {
+        super.onCreate()
+        keyboardPrefs = getSharedPreferences("keyboard_studio", MODE_PRIVATE)
+        keyboardPrefs.registerOnSharedPreferenceChangeListener(preferenceListener)
+    }
+
+    override fun onDestroy() {
+        keyboardPrefs.unregisterOnSharedPreferenceChangeListener(preferenceListener)
+        super.onDestroy()
+    }
     private var shifted = false
     private var numbers = false
     private var root: LinearLayout? = null
