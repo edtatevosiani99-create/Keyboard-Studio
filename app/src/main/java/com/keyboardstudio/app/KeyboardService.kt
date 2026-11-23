@@ -40,8 +40,10 @@ class KeyboardService : InputMethodService() {
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
         shifted = info?.let { it.inputType and android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES != 0 } ?: false
-        root = buildKeyboard()
+        refreshKeyboard()
     }
+
+    private fun refreshKeyboard() { setInputView(buildKeyboard()) }
 
     private fun buildKeyboard(): LinearLayout {
         val prefs = getSharedPreferences("keyboard_studio", MODE_PRIVATE)
@@ -63,7 +65,7 @@ class KeyboardService : InputMethodService() {
 
         if (numbers) {
             addRow(container, listOf("1","2","3","4","5","6","7","8","9","0"), keyColor, height, radius)
-            addRow(container, listOf("@","#","$","%","&","-","+","(",")","/"), keyColor, height, radius)
+            addRow(container, listOf("@","#","\$","%","&","-","+","(",")","/"), keyColor, height, radius)
             addRow(container, listOf("=","*","\"","' ",":",";","!","?","⌫"), keyColor, height, radius) {
                 if (it == "⌫") deleteOne() else commit(it)
             }
@@ -72,7 +74,7 @@ class KeyboardService : InputMethodService() {
             addRow(container, listOf("a","s","d","f","g","h","j","k","l"), keyColor, height, radius)
             addRow(container, listOf("⇧","z","x","c","v","b","n","m","⌫"), keyColor, height, radius) {
                 when (it) {
-                    "⇧" -> { shifted = !shifted; root = buildKeyboard() }
+                    "⇧" -> { shifted = !shifted; refreshKeyboard() }
                     "⌫" -> deleteOne()
                     else -> commit(if (shifted) it.uppercase() else it)
                 }
@@ -85,7 +87,7 @@ class KeyboardService : InputMethodService() {
         }
         addSpecialKey(bottom, if (numbers) "ABC" else "?123", 1.25f, keyColor, height, radius) {
             numbers = !numbers
-            root = buildKeyboard()
+            refreshKeyboard()
         }
         addSpecialKey(bottom, ",", 0.75f, keyColor, height, radius) { commit(",") }
         addSpecialKey(bottom, "English", 4.4f, keyColor, height, radius) { commit(" ") }
@@ -154,7 +156,7 @@ class KeyboardService : InputMethodService() {
         currentInputConnection?.commitText(value, 1)
         if (shifted && value.length == 1 && value[0].isLetter()) {
             shifted = false
-            root = buildKeyboard()
+            refreshKeyboard()
         }
     }
 
