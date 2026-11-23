@@ -237,7 +237,7 @@ private fun SettingsCard(open:()->Unit,language:String,onLanguage:(String)->Unit
  Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(22.dp)).background(Color.White).padding(18.dp)) {
   Text(tx(language,"Apply your design"),fontSize=18.sp,fontWeight=FontWeight.Bold,color=Color(0xFF302840))
   Spacer(Modifier.height(8.dp))
-  Text("Android does not provide a universal way for one app to change another keyboard's appearance. Gboard, Samsung Keyboard and SwiftKey manage themes separately.",fontSize=13.sp,color=Color(0xFF746B80),lineHeight=19.sp)
+  Text("Keyboard Studio includes its own Android keyboard. Enable it in system keyboard settings, then choose Keyboard Studio as your active keyboard. Your selected theme and key settings will be used while typing.",fontSize=13.sp,color=Color(0xFF746B80),lineHeight=19.sp)
   Spacer(Modifier.height(16.dp))
   var expanded by remember { mutableStateOf(false) }
   Text(tx(language,"Interface language"),fontWeight=FontWeight.Bold,color=Color(0xFF302840))
@@ -255,6 +255,6 @@ private fun SettingsCard(open:()->Unit,language:String,onLanguage:(String)->Unit
   Spacer(Modifier.height(8.dp))
   Text(if(language=="Русский") "Сбросит предпросмотр в приложении. Для возврата заводской темы Gboard или другой клавиатуры открой ее настройки и выбери тему по умолчанию." else if(language=="ქართული") "აღდგება აპის საწყისი წინასწარი ხედი. კლავიატურის ქარხნული თემის დასაბრუნებლად გახსენით თავად კლავიატურის პარამეტრები." else "This resets the in-app preview. To restore the factory theme of another keyboard, open that keyboard settings and choose its default theme.",fontSize=12.sp,color=Color(0xFF92889F),lineHeight=18.sp)
   Spacer(Modifier.height(12.dp))
-  Text("Keyboard Studio previews designs inside this app. Importing a design into another keyboard depends on that keyboard's own supported features.",fontSize=12.sp,color=Color(0xFF92889F))
+  Text("Your selected design is applied to the Keyboard Studio keyboard. Other keyboards such as Gboard and Samsung Keyboard keep their own themes.",fontSize=12.sp,color=Color(0xFF92889F))
  }
 }
