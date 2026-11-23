@@ -52,6 +52,22 @@ class KeyboardService : InputMethodService() {
         val keyColor = keyColors[prefs.getInt("keyColor", 0).coerceIn(0, 9)]
         val height = prefs.getFloat("height", 39f).roundToInt().coerceIn(30, 54)
         val radius = prefs.getFloat("rounding", 9f).roundToInt().coerceIn(2, 18)
+        val language = prefs.getString("language", "English") ?: "English"
+        val rows = when (language) {
+            "ქართული" -> listOf("ქწერტყუიოპ", "ასდფგჰჯკლ", "⇧ზხცვბნმ⌫")
+            "Русский" -> listOf("йцукенгшщз", "фывапролдж", "⇧ячсмитьбю⌫")
+            "Deutsch" -> listOf("qwertzuiop", "asdfghjkl", "⇧yxcvbnm⌫")
+            "Español" -> listOf("qwertyuiop", "asdfghjklñ", "⇧zxcvbnm⌫")
+            "Français" -> listOf("azertyuiop", "qsdfghjklm", "⇧wxcvbn⌫")
+            "Türkçe" -> listOf("qwertyuıop", "asdfghjklş", "⇧zxcvbnmö⌫")
+            "العربية" -> listOf("ضصثقفغعهخحج", "شسيبلاتنمك", "⇧ئءؤرلاى⌫")
+            else -> listOf("qwertyuiop", "asdfghjkl", "⇧zxcvbnm⌫")
+        }
+        val spaceLabel = when (language) {
+            "ქართული" -> "ქართული"; "Русский" -> "Русский"; "Deutsch" -> "Deutsch"
+            "Español" -> "Español"; "Français" -> "Français"; "Türkçe" -> "Türkçe"
+            "العربية" -> "العربية"; else -> "English"
+        }
 
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -70,9 +86,9 @@ class KeyboardService : InputMethodService() {
                 if (it == "⌫") deleteOne() else commit(it)
             }
         } else {
-            addRow(container, listOf("q","w","e","r","t","y","u","i","o","p"), keyColor, height, radius)
-            addRow(container, listOf("a","s","d","f","g","h","j","k","l"), keyColor, height, radius)
-            addRow(container, listOf("⇧","z","x","c","v","b","n","m","⌫"), keyColor, height, radius) {
+            addRow(container, rows[0], keyColor, height, radius)
+            addRow(container, rows[1], keyColor, height, radius)
+            addRow(container, rows[2], keyColor, height, radius) {
                 when (it) {
                     "⇧" -> { shifted = !shifted; refreshKeyboard() }
                     "⌫" -> deleteOne()
@@ -90,7 +106,7 @@ class KeyboardService : InputMethodService() {
             refreshKeyboard()
         }
         addSpecialKey(bottom, ",", 0.75f, keyColor, height, radius) { commit(",") }
-        addSpecialKey(bottom, "English", 4.4f, keyColor, height, radius) { commit(" ") }
+        addSpecialKey(bottom, spaceLabel, 4.4f, keyColor, height, radius) { commit(" ") }
         addSpecialKey(bottom, ".", 0.75f, keyColor, height, radius) { commit(".") }
         addSpecialKey(bottom, "↵", 1.25f, keyColor, height, radius) { enter() }
         container.addView(bottom)
