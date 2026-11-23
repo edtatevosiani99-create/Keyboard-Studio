@@ -51,6 +51,10 @@ private val palettes = listOf(
  listOf(Color(0xFFFF758C),Color(0xFFFF7EB3)), listOf(Color(0xFF43CEA2),Color(0xFF185A9D)),
  listOf(Color(0xFFDA22FF),Color(0xFF9733EE)), listOf(Color(0xFFFC4A1A),Color(0xFFF7B733))
 )
+private val languages = listOf("English","ქართული","Русский","Deutsch","Español","Français","Türkçe","العربية")
+private val uiText = mapOf("ქართული" to mapOf("Themes" to "თემები","Customize" to "მორგება","My Designs" to "ჩემი დიზაინები","Settings" to "პარამეტრები","Interface language" to "ინტერფეისის ენა","Restore original design" to "საწყისი დიზაინის აღდგენა","Open keyboard settings" to "კლავიატურის პარამეტრები"),"Русский" to mapOf("Themes" to "Темы","Customize" to "Настройка","My Designs" to "Мои дизайны","Settings" to "Настройки","Interface language" to "Язык интерфейса","Restore original design" to "Вернуть исходный дизайн","Open keyboard settings" to "Настройки клавиатуры"),"Deutsch" to mapOf("Themes" to "Designs","Customize" to "Anpassen","My Designs" to "Meine Designs","Settings" to "Einstellungen","Interface language" to "Sprache der Oberfläche","Restore original design" to "Originaldesign wiederherstellen","Open keyboard settings" to "Tastatureinstellungen öffnen"),"Español" to mapOf("Themes" to "Temas","Customize" to "Personalizar","My Designs" to "Mis diseños","Settings" to "Ajustes","Interface language" to "Idioma de la interfaz"),"Français" to mapOf("Themes" to "Thèmes","Customize" to "Personnaliser","My Designs" to "Mes créations","Settings" to "Paramètres","Interface language" to "Langue de l’interface"),"Türkçe" to mapOf("Themes" to "Temalar","Customize" to "Özelleştir","My Designs" to "Tasarımlarım","Settings" to "Ayarlar","Interface language" to "Arayüz dili"),"العربية" to mapOf("Themes" to "السمات","Customize" to "تخصيص","My Designs" to "تصميماتي","Settings" to "الإعدادات","Interface language" to "لغة الواجهة"))
+private fun tx(language:String,key:String):String = uiText[language]?.get(key) ?: key
+
 private val names = listOf(
  "Cotton Candy","Ocean Pop","Sunset","Mint Glow","Berry","Lemonade","Rose Quartz","Aqua Dream","Violet Sky","Tangerine",
  "Peach Bloom","Arctic Wave","Electric Lilac","Coral Crush","Golden Hour","Bubblegum","Blue Lagoon","Grape Soda","Mango Splash","Emerald",
@@ -78,6 +82,7 @@ private fun Studio(openSettings: () -> Unit) {
  val prefs = remember { context.getSharedPreferences("keyboard_studio", 0) }
  var selected by remember { mutableIntStateOf(prefs.getInt("selected",0).coerceIn(0,29)) }
  var tab by remember { mutableStateOf("Themes") }
+ var language by remember { mutableStateOf(prefs.getString("language","English") ?: "English") }
  var keyHeight by remember { mutableFloatStateOf(prefs.getFloat("height",39f)) }
  var rounding by remember { mutableFloatStateOf(prefs.getFloat("rounding",9f)) }
  var keyColorIndex by remember { mutableIntStateOf(prefs.getInt("keyColor",0)) }
@@ -100,7 +105,7 @@ private fun Studio(openSettings: () -> Unit) {
    listOf("Themes","Customize","My Designs","Settings").forEach { item ->
     NavigationBarItem(selected=tab==item,onClick={tab=item},icon={
      Icon(when(item){"Themes"->Icons.Rounded.Palette;"Customize"->Icons.Rounded.Keyboard;"My Designs"->Icons.Rounded.Save;else->Icons.Rounded.Settings},null)
-    },label={Text(item,fontSize=10.sp)})
+    },label={Text(tx(language,item),fontSize=10.sp)})
    }
   }
  }) { padding ->
@@ -117,7 +122,7 @@ private fun Studio(openSettings: () -> Unit) {
    Text(when(tab){"Themes"->"Explore 30 colorful gradient themes.";"Customize"->"Tune the keys and background of your preview.";"My Designs"->"Your saved designs stay on this device.";else->"Shortcuts and compatibility information."},color=Color(0xFF82798F),fontSize=14.sp)
    Spacer(Modifier.height(18.dp))
    when(tab) {
-    "Settings" -> SettingsCard(openSettings)
+    "Settings" -> SettingsCard(openSettings,language,{ language=it; prefs.edit().putString("language",it).apply() },{ selected=0; keyHeight=39f; rounding=9f; keyColorIndex=0; photoUri=null; prefs.edit().putInt("selected",0).putFloat("height",39f).putFloat("rounding",9f).putInt("keyColor",0).remove("photo").apply() })
     "My Designs" -> {
      if(saved.isEmpty()) InfoCard("No saved designs yet","Open Customize, choose your colors and tap Save design.")
      else saved.sorted().forEach { id ->
@@ -228,13 +233,27 @@ private fun InfoCard(title:String,body:String) {
  Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(Color.White).padding(18.dp)) { Text(title,fontWeight=FontWeight.Bold,color=Color(0xFF302840)); Spacer(Modifier.height(6.dp)); Text(body,color=Color(0xFF82798F),fontSize=13.sp) }
 }
 @Composable
-private fun SettingsCard(open:()->Unit) {
+private fun SettingsCard(open:()->Unit,language:String,onLanguage:(String)->Unit,onReset:()->Unit) {
  Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(22.dp)).background(Color.White).padding(18.dp)) {
-  Text("Apply your design",fontSize=18.sp,fontWeight=FontWeight.Bold,color=Color(0xFF302840))
+  Text(tx(language,"Apply your design"),fontSize=18.sp,fontWeight=FontWeight.Bold,color=Color(0xFF302840))
   Spacer(Modifier.height(8.dp))
   Text("Android does not provide a universal way for one app to change another keyboard's appearance. Gboard, Samsung Keyboard and SwiftKey manage themes separately.",fontSize=13.sp,color=Color(0xFF746B80),lineHeight=19.sp)
   Spacer(Modifier.height(16.dp))
-  Button(onClick=open,modifier=Modifier.fillMaxWidth()){Text("Open keyboard settings")}
+  var expanded by remember { mutableStateOf(false) }
+  Text(tx(language,"Interface language"),fontWeight=FontWeight.Bold,color=Color(0xFF302840))
+  Spacer(Modifier.height(8.dp))
+  Box {
+   OutlinedButton(onClick={expanded=true},modifier=Modifier.fillMaxWidth()) { Text(language,modifier=Modifier.weight(1f)); Text("⌄") }
+   DropdownMenu(expanded=expanded,onDismissRequest={expanded=false}) {
+    languages.forEach { option -> DropdownMenuItem(text={Text(option)},onClick={onLanguage(option);expanded=false}) }
+   }
+  }
+  Spacer(Modifier.height(14.dp))
+  Button(onClick=open,modifier=Modifier.fillMaxWidth()){Text(tx(language,"Open keyboard settings"))}
+  Spacer(Modifier.height(8.dp))
+  OutlinedButton(onClick=onReset,modifier=Modifier.fillMaxWidth()){Text(tx(language,"Restore original design"))}
+  Spacer(Modifier.height(8.dp))
+  Text(if(language=="Русский") "Сбросит предпросмотр в приложении. Для возврата заводской темы Gboard или другой клавиатуры открой ее настройки и выбери тему по умолчанию." else if(language=="ქართული") "აღდგება აპის საწყისი წინასწარი ხედი. კლავიატურის ქარხნული თემის დასაბრუნებლად გახსენით თავად კლავიატურის პარამეტრები." else "This resets the in-app preview. To restore the factory theme of another keyboard, open that keyboard settings and choose its default theme.",fontSize=12.sp,color=Color(0xFF92889F),lineHeight=18.sp)
   Spacer(Modifier.height(12.dp))
   Text("Keyboard Studio previews designs inside this app. Importing a design into another keyboard depends on that keyboard's own supported features.",fontSize=12.sp,color=Color(0xFF92889F))
  }
