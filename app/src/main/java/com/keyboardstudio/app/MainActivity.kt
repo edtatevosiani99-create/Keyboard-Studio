@@ -105,7 +105,7 @@ private fun KeyboardStudioApp(onOpenKeyboardSettings: () -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     Modifier.size(46.dp).clip(RoundedCornerShape(15.dp))
-                        .background(Brush.linearGradient(listOf(Color(0xFFFF79B7), Color(0xFF8067F5))),
+                        .background(Brush.linearGradient(listOf(Color(0xFFFF79B7), Color(0xFF8067F5)))),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(Icons.Rounded.Keyboard, contentDescription = null, tint = Color.White)
