@@ -17,7 +17,7 @@ class KeyboardService : InputMethodService() {
     private val preferenceListener =
         SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (key in setOf("selected", "keyColor", "height", "rounding", "language") &&
-                inputView != null && currentInputConnection != null
+                currentInputConnection != null
             ) {
                 refreshKeyboard()
             }
@@ -108,9 +108,9 @@ class KeyboardService : InputMethodService() {
                 if (it == "⌫") deleteOne() else commit(it)
             }
         } else {
-            addRow(container, rows[0], keyColor, height, radius)
-            addRow(container, rows[1], keyColor, height, radius)
-            addRow(container, rows[2], keyColor, height, radius) {
+            addRow(container, rows[0].map { it.toString() }, keyColor, height, radius)
+            addRow(container, rows[1].map { it.toString() }, keyColor, height, radius)
+            addRow(container, rows[2].map { it.toString() }, keyColor, height, radius) {
                 when (it) {
                     "⇧" -> { shifted = !shifted; refreshKeyboard() }
                     "⌫" -> deleteOne()
