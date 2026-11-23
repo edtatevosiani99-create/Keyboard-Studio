@@ -327,12 +327,22 @@ private fun KeyboardPreview(theme:KTheme,height:Dp,rounding:Dp,uri:Uri?,language
  val bitmap by produceState<Bitmap?>(null,uri) {
   value=if(uri==null) null else withContext(Dispatchers.IO) { runCatching { context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it) } }.getOrNull() }
  }
+ val previewRows = when(language) {
+  "ქართული" -> listOf("ქწერტყუიოპ","ასდფგჰჯკლ","ზხცვბნმ")
+  "Русский" -> listOf("ЙЦУКЕНГШЩЗ","ФЫВАПРОЛДЖ","ЯЧСМИТЬБЮ")
+  "Deutsch" -> listOf("QWERTZUIOP","ASDFGHJKL","YXCVBNM")
+  "Español" -> listOf("QWERTYUIOP","ASDFGHJKLÑ","ZXCVBNM")
+  "Français" -> listOf("AZERTYUIOP","QSDFGHJKLM","WXCVBN")
+  "Türkçe" -> listOf("QWERTYUIOP","ASDFGHJKLŞ","ZXCVBNMÖ")
+  "العربية" -> listOf("ضصثقفغعهخحج","شسيبلاتنمك","ئءؤرلاى")
+  else -> listOf("QWERTYUIOP","ASDFGHJKL","ZXCVBNM")
+ }
  Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(26.dp)).background(Brush.linearGradient(theme.colors)).padding(13.dp)) {
   if(bitmap!=null) Image(bitmap!!.asImageBitmap(),null,Modifier.matchParentSize(),contentScale=ContentScale.Crop)
   Column {
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) { Text(tx(language,"LIVE PREVIEW"),color=Color.White,fontWeight=FontWeight.Bold); Text("ABC • $language",color=Color.White,fontSize=11.sp) }
    Spacer(Modifier.height(12.dp))
-   listOf("QWERTYUIOP","ASDFGHJKL","ZXCVBNM").forEachIndexed { row,letters ->
+   previewRows.forEachIndexed { row,letters ->
     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(4.dp)) {
      if(row==2) Key("⇧",Modifier.weight(1.1f),theme,height,rounding)
      letters.forEach { Key(it.toString(),Modifier.weight(1f),theme,height,rounding) }
