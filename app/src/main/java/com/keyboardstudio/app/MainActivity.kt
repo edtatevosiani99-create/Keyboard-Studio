@@ -274,7 +274,7 @@ private fun Studio(openSettings: () -> Unit) {
       Text(tx(language,"ALL THEMES  •  30"),fontSize=11.sp,fontWeight=FontWeight.Bold,color=Color(0xFF92889F),letterSpacing=1.3.sp)
       Spacer(Modifier.height(12.dp))
       themes.forEachIndexed { i,t ->
-       ThemeRow(t,selected==i) { selected=i; prefs.edit().putInt("selected",i).apply() }
+       ThemeRow(t,selected==i,language) { selected=i; prefs.edit().putInt("selected",i).apply() }
        Spacer(Modifier.height(9.dp))
       }
      } else {
