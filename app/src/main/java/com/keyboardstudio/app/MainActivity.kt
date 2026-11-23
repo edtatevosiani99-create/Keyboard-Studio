@@ -302,7 +302,7 @@ private fun KeyboardPreview(theme:KTheme,height:Dp,rounding:Dp,uri:Uri?,language
  Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(26.dp)).background(Brush.linearGradient(theme.colors)).padding(13.dp)) {
   if(bitmap!=null) Image(bitmap!!.asImageBitmap(),null,Modifier.matchParentSize(),contentScale=ContentScale.Crop)
   Column {
-   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) { Text(tx(language,"LIVE PREVIEW"),color=Color.White,fontWeight=FontWeight.Bold); Text("ABC • English",color=Color.White,fontSize=11.sp) }
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) { Text(tx(language,"LIVE PREVIEW"),color=Color.White,fontWeight=FontWeight.Bold); Text("ABC • $language",color=Color.White,fontSize=11.sp) }
    Spacer(Modifier.height(12.dp))
    listOf("QWERTYUIOP","ASDFGHJKL","ZXCVBNM").forEachIndexed { row,letters ->
     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(4.dp)) {
@@ -314,7 +314,7 @@ private fun KeyboardPreview(theme:KTheme,height:Dp,rounding:Dp,uri:Uri?,language
    }
    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(4.dp)) {
     Key("?123",Modifier.weight(1.2f),theme,height,rounding); Key("☺",Modifier.weight(.9f),theme,height,rounding)
-    Key(",",Modifier.weight(.7f),theme,height,rounding); Key("English",Modifier.weight(4f),theme,height,rounding)
+    Key(",",Modifier.weight(.7f),theme,height,rounding); Key(language,Modifier.weight(4f),theme,height,rounding)
     Key(".",Modifier.weight(.7f),theme,height,rounding); Key("↵",Modifier.weight(1.2f),theme,height,rounding)
    }
   }
@@ -349,7 +349,7 @@ private fun Editor(language:String,colorIndex:Int,colors:List<Color>,height:Floa
   OutlinedButton(onClick=onPhoto,modifier=Modifier.fillMaxWidth()) { Icon(Icons.Rounded.PhotoLibrary,null); Spacer(Modifier.width(8.dp)); Text(tx(language,if(hasPhoto)"Change background photo" else "Choose background photo")) }
   if(hasPhoto) TextButton(onClick=onRemovePhoto,modifier=Modifier.align(Alignment.End)){Text(tx(language,"Remove photo"))}
   Spacer(Modifier.height(8.dp))
-  Button(onClick=onSave,modifier=Modifier.fillMaxWidth()) { Icon(Icons.Rounded.Save,null); Spacer(Modifier.width(8.dp)); Text("Save design") }
+  Button(onClick=onSave,modifier=Modifier.fillMaxWidth()) { Icon(Icons.Rounded.Save,null); Spacer(Modifier.width(8.dp)); Text(tx(language,"Save design")) }
   Spacer(Modifier.height(8.dp))
   Text(tx(language,"Your preview and saved settings are stored on this device. Photo backgrounds are preview-only unless a target keyboard supports importing them."),fontSize=12.sp,color=Color(0xFF92889F))
  }
