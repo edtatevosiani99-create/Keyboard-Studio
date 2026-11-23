@@ -188,7 +188,7 @@ private val uiText = mapOf(
 )
 )
 private fun tx(language:String,key:String):String = uiText[language]?.get(key) ?: key
-private fun metricText(language:String,key:String,value:Int):String = tx(language,key.replace("%s",value.toString()))
+private fun metricText(language:String,key:String,value:Int):String = tx(language,key).replace("%s",value.toString())
 
 
 private val names = listOf(
@@ -280,7 +280,7 @@ private fun Studio(openSettings: () -> Unit) {
     Column { Text("Keyboard Studio",fontSize=21.sp,fontWeight=FontWeight.ExtraBold,color=Color(0xFF28213D)); Text(tx(language,"Make your keyboard feel like you"),fontSize=12.sp,color=Color(0xFF8B829B)) }
    }
    Spacer(Modifier.height(22.dp))
-   Text(when(tab){"Themes"->"Find your\ncolor mood.";"Customize"->"Make it yours.";"My Designs"->"Your creations.";else->"Your keyboard setup."},fontSize=31.sp,lineHeight=35.sp,fontWeight=FontWeight.ExtraBold,color=Color(0xFF28213D))
+   Text(tx(language,when(tab){"Themes"->"Find your\ncolor mood.";"Customize"->"Make it yours.";"My Designs"->"Your creations.";else->"Your keyboard setup."}),fontSize=31.sp,lineHeight=35.sp,fontWeight=FontWeight.ExtraBold,color=Color(0xFF28213D))
    Spacer(Modifier.height(7.dp))
    Text(tx(language,when(tab){"Themes"->"Explore 30 colorful gradient themes.";"Customize"->"Tune the keys and background of your preview.";"My Designs"->"Your saved designs stay on this device.";else->"Shortcuts and compatibility information."}),color=Color(0xFF82798F),fontSize=14.sp)
    Spacer(Modifier.height(18.dp))
