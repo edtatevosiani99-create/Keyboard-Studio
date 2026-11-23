@@ -56,7 +56,7 @@ private val uiText = mapOf(
 "ქართული" to mapOf(
 "Themes" to "თემები","Customize" to "მორგება","My Designs" to "ჩემი დიზაინები","Settings" to "პარამეტრები",
 "Interface language" to "ინტერფეისის ენა","Restore original design" to "საწყისი დიზაინის აღდგენა","Open keyboard settings" to "კლავიატურის პარამეტრების გახსნა",
-"Make your keyboard feel like you" to "შექმენი შენი უნიკალური კლავიატურა","Find your\\ncolor mood." to "იპოვე შენი\\nფერების განწყობა.",
+"Make your keyboard feel like you" to "შექმენი შენი უნიკალური კლავიატურა","Find your\ncolor mood." to "იპოვე შენი\nფერების განწყობა.",
 "Make it yours." to "მოირგე შენზე.","Your creations." to "შენი ნამუშევრები.","Your keyboard setup." to "შენი კლავიატურის პარამეტრები.",
 "Explore 30 colorful gradient themes." to "დაათვალიერე 30 ფერადი გრადიენტული თემა.",
 "Tune the keys and background of your preview." to "მოარგე კლავიშები და ფონი.",
@@ -75,7 +75,7 @@ private val uiText = mapOf(
 "Русский" to mapOf(
 "Themes" to "Темы","Customize" to "Настройка","My Designs" to "Мои дизайны","Settings" to "Настройки",
 "Interface language" to "Язык интерфейса","Restore original design" to "Вернуть исходный дизайн","Open keyboard settings" to "Открыть настройки клавиатуры",
-"Make your keyboard feel like you" to "Создай клавиатуру под себя","Find your\\ncolor mood." to "Найди своё\\nцветовое настроение.",
+"Make your keyboard feel like you" to "Создай клавиатуру под себя","Find your\ncolor mood." to "Найди своё\nцветовое настроение.",
 "Make it yours." to "Настрой под себя.","Your creations." to "Твои дизайны.","Your keyboard setup." to "Настройки клавиатуры.",
 "Explore 30 colorful gradient themes." to "Выбирай из 30 ярких градиентных тем.",
 "Tune the keys and background of your preview." to "Настрой клавиши и фон клавиатуры.",
@@ -94,7 +94,7 @@ private val uiText = mapOf(
 "Deutsch" to mapOf(
 "Themes" to "Designs","Customize" to "Anpassen","My Designs" to "Meine Designs","Settings" to "Einstellungen",
 "Interface language" to "Sprache der Oberfläche","Restore original design" to "Originaldesign wiederherstellen","Open keyboard settings" to "Tastatureinstellungen öffnen",
-"Make your keyboard feel like you" to "Gestalte deine persönliche Tastatur","Find your\\ncolor mood." to "Finde deine\\nFarbwelt.",
+"Make your keyboard feel like you" to "Gestalte deine persönliche Tastatur","Find your\ncolor mood." to "Finde deine\nFarbwelt.",
 "Make it yours." to "Mach sie zu deiner.","Your creations." to "Deine Designs.","Your keyboard setup." to "Deine Tastatureinstellungen.",
 "Explore 30 colorful gradient themes." to "Entdecke 30 farbenfrohe Farbverläufe.",
 "Tune the keys and background of your preview." to "Passe Tasten und Hintergrund an.",
@@ -113,7 +113,7 @@ private val uiText = mapOf(
 "Español" to mapOf(
 "Themes" to "Temas","Customize" to "Personalizar","My Designs" to "Mis diseños","Settings" to "Ajustes",
 "Interface language" to "Idioma de la interfaz","Restore original design" to "Restaurar diseño original","Open keyboard settings" to "Abrir ajustes del teclado",
-"Make your keyboard feel like you" to "Personaliza tu teclado a tu estilo","Find your\\ncolor mood." to "Encuentra tu\\nestilo de color.",
+"Make your keyboard feel like you" to "Personaliza tu teclado a tu estilo","Find your\ncolor mood." to "Encuentra tu\nestilo de color.",
 "Make it yours." to "Hazlo tuyo.","Your creations." to "Tus diseños.","Your keyboard setup." to "Configuración del teclado.",
 "Explore 30 colorful gradient themes." to "Explora 30 temas con degradados coloridos.",
 "Tune the keys and background of your preview." to "Ajusta las teclas y el fondo de la vista previa.",
@@ -132,7 +132,7 @@ private val uiText = mapOf(
 "Français" to mapOf(
 "Themes" to "Thèmes","Customize" to "Personnaliser","My Designs" to "Mes créations","Settings" to "Paramètres",
 "Interface language" to "Langue de l’interface","Restore original design" to "Restaurer le design d’origine","Open keyboard settings" to "Ouvrir les paramètres du clavier",
-"Make your keyboard feel like you" to "Créez un clavier à votre image","Find your\\ncolor mood." to "Trouvez votre\\nunivers de couleurs.",
+"Make your keyboard feel like you" to "Créez un clavier à votre image","Find your\ncolor mood." to "Trouvez votre\nunivers de couleurs.",
 "Make it yours." to "Personnalisez-le.","Your creations." to "Vos créations.","Your keyboard setup." to "Configuration du clavier.",
 "Explore 30 colorful gradient themes." to "Découvrez 30 thèmes dégradés colorés.",
 "Tune the keys and background of your preview." to "Personnalisez les touches et l’arrière-plan.",
@@ -151,7 +151,7 @@ private val uiText = mapOf(
 "Türkçe" to mapOf(
 "Themes" to "Temalar","Customize" to "Özelleştir","My Designs" to "Tasarımlarım","Settings" to "Ayarlar",
 "Interface language" to "Arayüz dili","Restore original design" to "Orijinal tasarımı geri yükle","Open keyboard settings" to "Klavye ayarlarını aç",
-"Make your keyboard feel like you" to "Klavyeni kendi tarzına göre tasarla","Find your\\ncolor mood." to "Renk tarzını\\nkeşfet.",
+"Make your keyboard feel like you" to "Klavyeni kendi tarzına göre tasarla","Find your\ncolor mood." to "Renk tarzını\nkeşfet.",
 "Make it yours." to "Kendine göre düzenle.","Your creations." to "Tasarımların.","Your keyboard setup." to "Klavye ayarların.",
 "Explore 30 colorful gradient themes." to "30 renkli geçişli temayı keşfet.",
 "Tune the keys and background of your preview." to "Tuşları ve arka planı düzenle.",
@@ -170,7 +170,7 @@ private val uiText = mapOf(
 "العربية" to mapOf(
 "Themes" to "السمات","Customize" to "تخصيص","My Designs" to "تصميماتي","Settings" to "الإعدادات",
 "Interface language" to "لغة الواجهة","Restore original design" to "استعادة التصميم الأصلي","Open keyboard settings" to "فتح إعدادات لوحة المفاتيح",
-"Make your keyboard feel like you" to "اجعل لوحة المفاتيح تعبر عنك","Find your\\ncolor mood." to "اكتشف\\nألوانك المفضلة.",
+"Make your keyboard feel like you" to "اجعل لوحة المفاتيح تعبر عنك","Find your\ncolor mood." to "اكتشف\nألوانك المفضلة.",
 "Make it yours." to "خصصها كما تحب.","Your creations." to "تصميماتك.","Your keyboard setup." to "إعدادات لوحة المفاتيح.",
 "Explore 30 colorful gradient themes." to "اكتشف 30 سمة بتدرجات لونية جميلة.",
 "Tune the keys and background of your preview." to "خصص الأزرار والخلفية في المعاينة.",
