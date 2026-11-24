@@ -426,7 +426,7 @@ class KeyboardService : InputMethodService() {
         val handle = TextView(this).apply {
             text = label
             textSize = 28f
-            gravity = Gravity.CENTER
+            this.gravity = Gravity.CENTER
             setTextColor(0xFF61739F.toInt())
         }
         var downX = 0f
