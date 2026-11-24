@@ -16,7 +16,7 @@ class KeyboardService : InputMethodService() {
 
     private val preferenceListener =
         SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key in setOf("selected", "keyColor", "height", "rounding", "language") &&
+            if (key in setOf("selected", "keyColor", "height", "rounding", "language", "keyboardLanguage") &&
                 currentInputConnection != null
             ) {
                 refreshKeyboard()
@@ -33,6 +33,7 @@ class KeyboardService : InputMethodService() {
         keyboardPrefs.unregisterOnSharedPreferenceChangeListener(preferenceListener)
         super.onDestroy()
     }
+    private val supportedLanguages = listOf("English", "ქართული", "Русский", "Deutsch", "Español", "Français", "Türkçe", "العربية")
     private var shifted = false
     private var numbers = false
     private var root: LinearLayout? = null
@@ -74,7 +75,8 @@ class KeyboardService : InputMethodService() {
         val keyColor = keyColors[prefs.getInt("keyColor", 0).coerceIn(0, 9)]
         val height = prefs.getFloat("height", 39f).roundToInt().coerceIn(30, 54)
         val radius = prefs.getFloat("rounding", 9f).roundToInt().coerceIn(2, 18)
-        val language = prefs.getString("language", "English") ?: "English"
+        val language = prefs.getString("keyboardLanguage", null)
+            ?: (prefs.getString("language", "English") ?: "English")
         val rows = when (language) {
             "ქართული" -> listOf("ქწერტყუიოპ", "ასდფგჰჯკლ", "⇧ზხცვბნმ⌫")
             "Русский" -> listOf("йцукенгшщз", "фывапролдж", "⇧ячсмитьбю⌫")
@@ -127,9 +129,10 @@ class KeyboardService : InputMethodService() {
             numbers = !numbers
             refreshKeyboard()
         }
-        addSpecialKey(bottom, ",", 0.75f, keyColor, height, radius) { commit(",") }
-        addSpecialKey(bottom, spaceLabel, 4.4f, keyColor, height, radius) { commit(" ") }
-        addSpecialKey(bottom, ".", 0.75f, keyColor, height, radius) { commit(".") }
+        addSpecialKey(bottom, "🌐", 0.9f, keyColor, height, radius) { switchKeyboardLanguage() }
+        addSpecialKey(bottom, ",", 0.6f, keyColor, height, radius) { commit(",") }
+        addSpecialKey(bottom, spaceLabel, 3.6f, keyColor, height, radius) { commit(" ") }
+        addSpecialKey(bottom, ".", 0.6f, keyColor, height, radius) { commit(".") }
         addSpecialKey(bottom, "↵", 1.25f, keyColor, height, radius) { enter() }
         container.addView(bottom)
         return container
@@ -188,6 +191,17 @@ class KeyboardService : InputMethodService() {
         val params = LinearLayout.LayoutParams(0, dp(height), weight)
         params.setMargins(dp(2), dp(1), dp(2), dp(1))
         row.addView(view, params)
+    }
+
+    private fun switchKeyboardLanguage() {
+        val current = keyboardPrefs.getString("keyboardLanguage", null)
+            ?: (keyboardPrefs.getString("language", "English") ?: "English")
+        val index = supportedLanguages.indexOf(current).let { if (it < 0) 0 else it }
+        val next = supportedLanguages[(index + 1) % supportedLanguages.size]
+        keyboardPrefs.edit().putString("keyboardLanguage", next).apply()
+        shifted = false
+        numbers = false
+        refreshKeyboard()
     }
 
     private fun commit(value: String) {
