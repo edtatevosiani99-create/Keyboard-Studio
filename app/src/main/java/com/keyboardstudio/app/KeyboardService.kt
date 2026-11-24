@@ -243,14 +243,18 @@ class KeyboardService : InputMethodService() {
             oneHandOnLeft = !oneHandOnLeft
             refreshKeyboard()
         }
-        val keyboardParams = LinearLayout.LayoutParams(0, -2, 1f)
+        val keyboardParams = LinearLayout.LayoutParams(0, -2, 4f)
+        val spacerParams = LinearLayout.LayoutParams(0, 1, 1f)
         val controlsParams = LinearLayout.LayoutParams(dp(48), -2)
+        val spacer = View(this)
         if (oneHandOnLeft) {
+            outer.addView(spacer, spacerParams)
             outer.addView(keyboard, keyboardParams)
             outer.addView(controls, controlsParams)
         } else {
             outer.addView(controls, controlsParams)
             outer.addView(keyboard, keyboardParams)
+            outer.addView(spacer, spacerParams)
         }
         return outer
     }
