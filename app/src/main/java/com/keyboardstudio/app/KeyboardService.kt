@@ -57,6 +57,7 @@ class KeyboardService : InputMethodService() {
     private var oneHandPositionX = Float.NaN
     private var oneHandPositionY = 0f
     private var root: LinearLayout? = null
+    private var activeThemeIndex: Int = 0
     private val quickEmojis = listOf("😀", "😂", "🥰", "😍", "😘", "😊", "😭", "😉", "😎", "❤️", "👍", "🙏")
 
     private val palettes = listOf(
@@ -91,7 +92,19 @@ class KeyboardService : InputMethodService() {
         // Ice
         intArrayOf(0xFF9BE7FF.toInt(), 0xFF2478D4.toInt()),
         // Rainbow
-        intArrayOf(0xFFFF4FA3.toInt(), 0xFF633BFF.toInt())
+        intArrayOf(0xFFFF4FA3.toInt(), 0xFF633BFF.toInt()),
+        // Gothic Rose
+        intArrayOf(0xFF170407.toInt(), 0xFF030303.toInt()),
+        // Raven
+        intArrayOf(0xFF202A38.toInt(), 0xFF030507.toInt()),
+        // Cross
+        intArrayOf(0xFF300509.toInt(), 0xFF030303.toInt()),
+        // Purple Gothic
+        intArrayOf(0xFF26083D.toInt(), 0xFF030207.toInt()),
+        // Matte Black
+        intArrayOf(0xFF181818.toInt(), 0xFF050505.toInt()),
+        // Shadow Gold
+        intArrayOf(0xFF33230B.toInt(), 0xFF030303.toInt())
     )
     private val keyColors = intArrayOf(
         0xFFFFF1FA.toInt(), 0xFFEAFBFF.toInt(), 0xFFFFF3E9.toInt(),
@@ -151,10 +164,12 @@ class KeyboardService : InputMethodService() {
 
     private fun buildKeyboard(): View {
         val prefs = getSharedPreferences("keyboard_studio", MODE_PRIVATE)
-        val selected = prefs.getInt("selected", 0).coerceIn(0, 40)
+        val selected = prefs.getInt("selected", 0).coerceIn(0, 46)
+        activeThemeIndex = selected
         val paletteIndex = if (selected >= 30) selected - 20 else selected % 10
         val palette = palettes[paletteIndex.coerceIn(0, palettes.lastIndex)]
-        val keyColor = keyColors[prefs.getInt("keyColor", 0).coerceIn(0, 9)]
+        val keyColor = if (selected >= 41) 0xFF080808.toInt()
+            else keyColors[prefs.getInt("keyColor", 0).coerceIn(0, 9)]
         val baseHeight = prefs.getFloat("height", 39f).roundToInt().coerceIn(30, 54)
         val height = if (oneHandMode) {
             (baseHeight * oneHandHeightScale).roundToInt().coerceIn(24, 64)
@@ -681,8 +696,46 @@ class KeyboardService : InputMethodService() {
                 label.length > 5 -> 15f
                 else -> 21f
             }
-            setTextColor(if (dark) Color.WHITE else 0xFF29243A.toInt())
-            background = GradientDrawable().apply {
+            val gothic = activeThemeIndex >= 41
+            val accent = when (activeThemeIndex) {
+                41 -> 0xFF74202B.toInt()
+                42 -> 0xFF718196.toInt()
+                43 -> 0xFF8B202A.toInt()
+                44 -> 0xFF713A91.toInt()
+                45 -> 0xFF171717.toInt()
+                46 -> 0xFF9A7734.toInt()
+                else -> 0x66FFFFFF.toInt()
+            }
+            val keyTop = when (activeThemeIndex) {
+                41 -> 0xFF292020.toInt()
+                42 -> 0xFF293440.toInt()
+                43 -> 0xFF2A1518.toInt()
+                44 -> 0xFF321B40.toInt()
+                45 -> 0xFF111111.toInt()
+                46 -> 0xFF302512.toInt()
+                else -> keyColor
+            }
+            val keyBottom = when (activeThemeIndex) {
+                41 -> 0xFF080505.toInt()
+                42 -> 0xFF070A0E.toInt()
+                43 -> 0xFF080303.toInt()
+                44 -> 0xFF09040D.toInt()
+                45 -> 0xFF090909.toInt()
+                46 -> 0xFF090704.toInt()
+                else -> keyColor
+            }
+            setTextColor(if (gothic && activeThemeIndex == 46) 0xFFFFD98A.toInt()
+                else if (gothic || dark) Color.WHITE else 0xFF29243A.toInt())
+            background = if (gothic) {
+                GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(keyTop, keyBottom)).apply {
+                    cornerRadius = dp(radius).toFloat()
+                    if (activeThemeIndex == 45) {
+                        setStroke(0, 0xFF111111.toInt())
+                    } else {
+                        setStroke(dp(1), accent)
+                    }
+                }
+            } else GradientDrawable().apply {
                 setColor(keyColor)
                 cornerRadius = dp(radius).toFloat()
                 setStroke(dp(1), 0x66FFFFFF)
