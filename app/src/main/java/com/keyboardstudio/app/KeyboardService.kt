@@ -123,7 +123,7 @@ class KeyboardService : InputMethodService() {
             .onFailure { android.util.Log.e("KeyboardStudio", "Keyboard refresh failed", it) }
     }
 
-    private fun buildKeyboard(): LinearLayout {
+    private fun buildKeyboard(): View {
         val prefs = getSharedPreferences("keyboard_studio", MODE_PRIVATE)
         val selected = prefs.getInt("selected", 0).coerceIn(0, 29)
         val palette = palettes[selected % palettes.size]
@@ -285,7 +285,16 @@ class KeyboardService : InputMethodService() {
                         group.translationY = startY + event.rawY - downY
                         true
                     }
-                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> true
+                    MotionEvent.ACTION_UP -> {
+                        if (kotlin.math.abs(event.rawX - downX) < dp(8) &&
+                            kotlin.math.abs(event.rawY - downY) < dp(8)
+                        ) {
+                            oneHandAdjustMode = false
+                            refreshKeyboard()
+                        }
+                        true
+                    }
+                    MotionEvent.ACTION_CANCEL -> true
                     else -> false
                 }
             }
