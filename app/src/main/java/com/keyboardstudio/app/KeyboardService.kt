@@ -51,7 +51,11 @@ class KeyboardService : InputMethodService() {
     private var oneHandMode = false
     private var oneHandOnLeft = false
     private var oneHandAdjustMode = false
+    // Width limits match the supplied minimum and maximum Gboard examples.
     private var oneHandWidth = 0.78f
+    private var oneHandHeightScale = 1.0f
+    private var oneHandPositionX = Float.NaN
+    private var oneHandPositionY = 0f
     private var root: LinearLayout? = null
     private val quickEmojis = listOf("😀", "😂", "🥰", "😍", "😘", "😊", "😭", "😉", "😎", "❤️", "👍", "🙏")
 
@@ -128,7 +132,10 @@ class KeyboardService : InputMethodService() {
         val selected = prefs.getInt("selected", 0).coerceIn(0, 29)
         val palette = palettes[selected % palettes.size]
         val keyColor = keyColors[prefs.getInt("keyColor", 0).coerceIn(0, 9)]
-        val height = prefs.getFloat("height", 39f).roundToInt().coerceIn(30, 54)
+        val baseHeight = prefs.getFloat("height", 39f).roundToInt().coerceIn(30, 54)
+        val height = if (oneHandMode) {
+            (baseHeight * oneHandHeightScale).roundToInt().coerceIn(24, 64)
+        } else baseHeight
         val radius = prefs.getFloat("rounding", 9f).roundToInt().coerceIn(2, 18)
         val language = prefs.getString("keyboardLanguage", null)
             ?: (prefs.getString("language", "English") ?: "English")
@@ -222,10 +229,27 @@ class KeyboardService : InputMethodService() {
     private fun buildOneHandContainer(
         keyboard: LinearLayout, keyColor: Int, height: Int, radius: Int, palette: IntArray
     ): FrameLayout {
+        val screenWidth = resources.displayMetrics.widthPixels
+        val keyboardWidth = (screenWidth * oneHandWidth).roundToInt()
+            .coerceIn((screenWidth * 0.75f).roundToInt(), (screenWidth * 0.90f).roundToInt())
+        keyboard.measure(
+            View.MeasureSpec.makeMeasureSpec(keyboardWidth, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        val keyboardHeight = keyboard.measuredHeight.coerceAtLeast(dp(180))
+        val frameHeight = keyboardHeight + dp(112)
+
         val frame = FrameLayout(this).apply {
-            layoutParams = LinearLayout.LayoutParams(-1, -2)
+            layoutParams = FrameLayout.LayoutParams(-1, frameHeight)
+            minimumHeight = frameHeight
             setBackgroundColor(Color.TRANSPARENT)
         }
+
+        if (oneHandAdjustMode) {
+            buildOneHandAdjustView(frame, keyboard, keyboardWidth, keyboardHeight, keyColor, palette)
+            return frame
+        }
+
         val group = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -239,89 +263,203 @@ class KeyboardService : InputMethodService() {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
         }
-
-        if (!oneHandAdjustMode) {
-            addOneHandControl(controls, "⛶", keyColor, height) {
-                oneHandMode = false
-                oneHandAdjustMode = false
-                refreshKeyboard()
-            }
-            addOneHandControl(controls, if (oneHandOnLeft) "›" else "‹", keyColor, height) {
-                oneHandOnLeft = !oneHandOnLeft
-                refreshKeyboard()
-            }
-            addOneHandControl(controls, "↕", keyColor, height) {
-                oneHandAdjustMode = true
-                refreshKeyboard()
-            }
-        } else {
-            addOneHandControl(controls, "＋", keyColor, height) {
-                oneHandWidth = (oneHandWidth + 0.05f).coerceAtMost(0.96f)
-                refreshKeyboard()
-            }
-            addOneHandControl(controls, "－", keyColor, height) {
-                oneHandWidth = (oneHandWidth - 0.05f).coerceAtLeast(0.52f)
-                refreshKeyboard()
-            }
-            val dragHandle = addOneHandControl(controls, "✥", keyColor, height) {
-                oneHandAdjustMode = false
-                refreshKeyboard()
-            }
-            var downX = 0f
-            var downY = 0f
-            var startX = 0f
-            var startY = 0f
-            dragHandle.setOnTouchListener { view, event ->
-                when (event.actionMasked) {
-                    MotionEvent.ACTION_DOWN -> {
-                        downX = event.rawX
-                        downY = event.rawY
-                        startX = group.translationX
-                        startY = group.translationY
-                        true
-                    }
-                    MotionEvent.ACTION_MOVE -> {
-                        group.translationX = startX + event.rawX - downX
-                        group.translationY = startY + event.rawY - downY
-                        true
-                    }
-                    MotionEvent.ACTION_UP -> {
-                        if (kotlin.math.abs(event.rawX - downX) < dp(8) &&
-                            kotlin.math.abs(event.rawY - downY) < dp(8)
-                        ) {
-                            oneHandAdjustMode = false
-                            refreshKeyboard()
-                        }
-                        true
-                    }
-                    MotionEvent.ACTION_CANCEL -> true
-                    else -> false
-                }
-            }
+        addOneHandControl(controls, "⛶", keyColor, height) {
+            oneHandMode = false
+            oneHandAdjustMode = false
+            oneHandPositionX = Float.NaN
+            oneHandPositionY = 0f
+            refreshKeyboard()
+        }
+        addOneHandControl(controls, if (oneHandOnLeft) "›" else "‹", keyColor, height) {
+            oneHandOnLeft = !oneHandOnLeft
+            oneHandPositionX = Float.NaN
+            refreshKeyboard()
+        }
+        addOneHandControl(controls, "✥", keyColor, height) {
+            oneHandAdjustMode = true
+            refreshKeyboard()
         }
 
-        val screenWidth = resources.displayMetrics.widthPixels
-        val keyboardWidth = (screenWidth * oneHandWidth).roundToInt()
-        val controlWidth = dp(48)
-        val groupWidth = keyboardWidth + controlWidth + dp(8)
-        val keyboardParams = LinearLayout.LayoutParams(keyboardWidth, -2, 0f)
-        val controlsParams = LinearLayout.LayoutParams(controlWidth, -2)
+        val groupWidth = keyboardWidth + dp(48) + dp(8)
         if (oneHandOnLeft) {
-            group.addView(keyboard, keyboardParams)
-            group.addView(controls, controlsParams)
+            group.addView(keyboard, LinearLayout.LayoutParams(keyboardWidth, -2))
+            group.addView(controls, LinearLayout.LayoutParams(dp(48), -2))
         } else {
-            group.addView(controls, controlsParams)
-            group.addView(keyboard, keyboardParams)
+            group.addView(controls, LinearLayout.LayoutParams(dp(48), -2))
+            group.addView(keyboard, LinearLayout.LayoutParams(keyboardWidth, -2))
         }
 
-        val frameParams = FrameLayout.LayoutParams(groupWidth, -2).apply {
-            gravity = (if (oneHandOnLeft) Gravity.LEFT else Gravity.RIGHT) or Gravity.BOTTOM
-            bottomMargin = dp(2)
-            leftMargin = dp(2)
-            rightMargin = dp(2)
+        val maxX = (screenWidth - groupWidth).coerceAtLeast(0)
+        val defaultX = if (oneHandOnLeft) 0 else maxX
+        val x = if (oneHandPositionX.isNaN()) defaultX else
+            oneHandPositionX.roundToInt().coerceIn(0, maxX)
+        val maxY = dp(76)
+        val y = oneHandPositionY.roundToInt().coerceIn(0, maxY)
+        val params = FrameLayout.LayoutParams(groupWidth, keyboardHeight + dp(8)).apply {
+            gravity = Gravity.TOP or Gravity.LEFT
+            leftMargin = x
+            topMargin = y
         }
-        frame.addView(group, frameParams)
+        frame.addView(group, params)
         return frame
+    }
+
+    private fun buildOneHandAdjustView(
+        frame: FrameLayout,
+        keyboard: LinearLayout,
+        keyboardWidth: Int,
+        keyboardHeight: Int,
+        keyColor: Int,
+        palette: IntArray
+    ) {
+        val screenWidth = resources.displayMetrics.widthPixels
+        val panelHeight = keyboardHeight + dp(76)
+        val maxX = (screenWidth - keyboardWidth).coerceAtLeast(0)
+        val defaultX = if (oneHandOnLeft) 0 else maxX
+        val initialX = if (oneHandPositionX.isNaN()) defaultX else
+            oneHandPositionX.roundToInt().coerceIn(0, maxX)
+        val initialY = oneHandPositionY.roundToInt().coerceIn(0, dp(76))
+
+        val panel = FrameLayout(this).apply {
+            background = GradientDrawable().apply {
+                setColor(0xBDF7F6FF.toInt())
+                cornerRadius = dp(28).toFloat()
+                setStroke(dp(2), 0xFF7180A7.toInt())
+            }
+        }
+        keyboard.alpha = 0.30f
+        val keyboardParams = FrameLayout.LayoutParams(keyboardWidth - dp(16), keyboardHeight - dp(16)).apply {
+            gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+            topMargin = dp(8)
+        }
+        panel.addView(keyboard, keyboardParams)
+
+        val reset = makeAdjustPill("⟲  Reset")
+        reset.setOnClickListener {
+            oneHandWidth = 0.90f
+            oneHandHeightScale = 1.0f
+            oneHandPositionX = Float.NaN
+            oneHandPositionY = 0f
+            refreshKeyboard()
+        }
+        panel.addView(reset, FrameLayout.LayoutParams(dp(142), dp(48)).apply {
+            gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+            topMargin = (keyboardHeight * 0.27f).roundToInt()
+        })
+
+        val move = makeAdjustPill("✥")
+        panel.addView(move, FrameLayout.LayoutParams(dp(54), dp(54)).apply {
+            gravity = Gravity.CENTER
+        })
+        var downX = 0f
+        var downY = 0f
+        var startX = 0f
+        var startY = 0f
+        move.setOnTouchListener { _, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    downX = event.rawX
+                    downY = event.rawY
+                    startX = panel.translationX
+                    startY = panel.translationY
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    panel.translationX = (startX + event.rawX - downX)
+                        .coerceIn(-initialX.toFloat(), (maxX - initialX).toFloat())
+                    panel.translationY = (startY + event.rawY - downY)
+                        .coerceIn(-initialY.toFloat(), (dp(76) - initialY).toFloat())
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    oneHandPositionX = (initialX + panel.translationX).coerceIn(0f, maxX.toFloat())
+                    oneHandPositionY = (initialY + panel.translationY).coerceIn(0f, dp(76).toFloat())
+                    true
+                }
+                MotionEvent.ACTION_CANCEL -> true
+                else -> false
+            }
+        }
+
+        val done = makeAdjustPill("✓  Done")
+        done.setOnClickListener {
+            oneHandPositionX = (initialX + panel.translationX).coerceIn(0f, maxX.toFloat())
+            oneHandPositionY = (initialY + panel.translationY).coerceIn(0f, dp(76).toFloat())
+            oneHandAdjustMode = false
+            refreshKeyboard()
+        }
+        panel.addView(done, FrameLayout.LayoutParams(dp(142), dp(48)).apply {
+            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+            bottomMargin = dp(14)
+        })
+
+        addResizeHandle(panel, "◜", Gravity.TOP or Gravity.LEFT, true, true)
+        addResizeHandle(panel, "◝", Gravity.TOP or Gravity.RIGHT, false, true)
+        addResizeHandle(panel, "◟", Gravity.BOTTOM or Gravity.LEFT, true, false)
+        addResizeHandle(panel, "◞", Gravity.BOTTOM or Gravity.RIGHT, false, false)
+
+        frame.addView(panel, FrameLayout.LayoutParams(keyboardWidth, panelHeight).apply {
+            gravity = Gravity.TOP or Gravity.LEFT
+            leftMargin = initialX
+            topMargin = initialY
+        })
+    }
+
+    private fun makeAdjustPill(label: String): TextView {
+        return TextView(this).apply {
+            text = label
+            gravity = Gravity.CENTER
+            textSize = 16f
+            setTextColor(0xFF35415D.toInt())
+            background = GradientDrawable().apply {
+                setColor(0xFFE0E6FF.toInt())
+                cornerRadius = dp(28).toFloat()
+            }
+            isClickable = true
+            isFocusable = true
+        }
+    }
+
+    private fun addResizeHandle(
+        panel: FrameLayout, label: String, gravity: Int, leftCorner: Boolean, topCorner: Boolean
+    ) {
+        val handle = TextView(this).apply {
+            text = label
+            textSize = 28f
+            gravity = Gravity.CENTER
+            setTextColor(0xFF61739F.toInt())
+        }
+        var downX = 0f
+        var downY = 0f
+        handle.setOnTouchListener { _, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    downX = event.rawX
+                    downY = event.rawY
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    val dx = event.rawX - downX
+                    val dy = event.rawY - downY
+                    val widthDelta = (if (leftCorner) -dx else dx) / resources.displayMetrics.widthPixels.toFloat()
+                    val heightDelta = (if (topCorner) -dy else dy) / dp(520).toFloat()
+                    oneHandWidth = (oneHandWidth + widthDelta).coerceIn(0.75f, 0.90f)
+                    oneHandHeightScale = (oneHandHeightScale + heightDelta).coerceIn(0.75f, 1.25f)
+                    oneHandPositionX = Float.NaN
+                    refreshKeyboard()
+                    true
+                }
+                MotionEvent.ACTION_CANCEL -> true
+                else -> false
+            }
+        }
+        val isRight = gravity and Gravity.RIGHT == Gravity.RIGHT
+        val isBottom = gravity and Gravity.BOTTOM == Gravity.BOTTOM
+        panel.addView(handle, FrameLayout.LayoutParams(dp(38), dp(38)).apply {
+            this.gravity = gravity
+            if (isRight) rightMargin = dp(5) else leftMargin = dp(5)
+            if (isBottom) bottomMargin = dp(5) else topMargin = dp(5)
+        })
     }
 
     private fun addOneHandControl(
