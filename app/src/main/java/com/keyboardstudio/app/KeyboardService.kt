@@ -237,12 +237,14 @@ class KeyboardService : InputMethodService() {
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         )
         val keyboardHeight = keyboard.measuredHeight.coerceAtLeast(dp(180))
-        val frameHeight = keyboardHeight + dp(112)
-
         val frame = FrameLayout(this).apply {
-            layoutParams = FrameLayout.LayoutParams(-1, frameHeight)
-            minimumHeight = frameHeight
-            setBackgroundColor(Color.TRANSPARENT)
+            layoutParams = FrameLayout.LayoutParams(-1, -1)
+            setBackground(
+                GradientDrawable(
+                    GradientDrawable.Orientation.TL_BR,
+                    intArrayOf(palette[0], palette[1])
+                )
+            )
         }
 
         if (oneHandAdjustMode) {
@@ -296,9 +298,9 @@ class KeyboardService : InputMethodService() {
         val maxY = dp(76)
         val y = oneHandPositionY.roundToInt().coerceIn(0, maxY)
         val params = FrameLayout.LayoutParams(groupWidth, keyboardHeight + dp(8)).apply {
-            gravity = Gravity.TOP or Gravity.LEFT
+            gravity = Gravity.BOTTOM or Gravity.LEFT
             leftMargin = x
-            topMargin = y
+            bottomMargin = y
         }
         frame.addView(group, params)
         return frame
@@ -399,9 +401,9 @@ class KeyboardService : InputMethodService() {
         addResizeHandle(panel, "◞", Gravity.BOTTOM or Gravity.RIGHT, false, false)
 
         frame.addView(panel, FrameLayout.LayoutParams(keyboardWidth, panelHeight).apply {
-            gravity = Gravity.TOP or Gravity.LEFT
+            gravity = Gravity.BOTTOM or Gravity.LEFT
             leftMargin = initialX
-            topMargin = initialY
+            bottomMargin = initialY
         })
     }
 
