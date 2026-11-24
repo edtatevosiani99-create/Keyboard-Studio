@@ -110,6 +110,7 @@ class KeyboardService : InputMethodService() {
                 if (it == "⌫") deleteOne() else commit(it)
             }
         } else {
+            addRow(container, listOf("1","2","3","4","5","6","7","8","9","0"), keyColor, (height - 6).coerceAtLeast(26), radius)
             addRow(container, rows[0].map { it.toString() }, keyColor, height, radius)
             addRow(container, rows[1].map { it.toString() }, keyColor, height, radius)
             addRow(container, rows[2].map { it.toString() }, keyColor, height, radius) {
@@ -129,9 +130,10 @@ class KeyboardService : InputMethodService() {
             numbers = !numbers
             refreshKeyboard()
         }
+        addSpecialKey(bottom, "☺", 0.8f, keyColor, height, radius) { commit("🙂") }
         addSpecialKey(bottom, "🌐", 0.9f, keyColor, height, radius) { switchKeyboardLanguage() }
         addSpecialKey(bottom, ",", 0.6f, keyColor, height, radius) { commit(",") }
-        addSpecialKey(bottom, spaceLabel, 3.6f, keyColor, height, radius) { commit(" ") }
+        addSpecialKey(bottom, spaceLabel, 3.2f, keyColor, height, radius) { commit(" ") }
         addSpecialKey(bottom, ".", 0.6f, keyColor, height, radius) { commit(".") }
         addSpecialKey(bottom, "↵", 1.25f, keyColor, height, radius) { enter() }
         container.addView(bottom)
