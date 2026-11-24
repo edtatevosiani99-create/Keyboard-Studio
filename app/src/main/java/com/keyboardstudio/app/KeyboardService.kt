@@ -46,6 +46,8 @@ class KeyboardService : InputMethodService() {
     private var menuPanel = false
     private var textEditMode = false
     private var selectMode = false
+    private var oneHandMode = false
+    private var oneHandOnLeft = false
     private var root: LinearLayout? = null
     private val quickEmojis = listOf("😀", "😂", "🥰", "😍", "😘", "😊", "😭", "😉", "😎", "❤️", "👍", "🙏")
 
@@ -206,7 +208,71 @@ class KeyboardService : InputMethodService() {
         addSpecialKey(bottom, ".", 0.6f, keyColor, height, radius) { commit(".") }
         addSpecialKey(bottom, "↵", 1.25f, keyColor, height, radius) { enter() }
         container.addView(bottom)
-        return container
+        return if (oneHandMode) {
+            buildOneHandContainer(container, keyColor, height, radius, palette)
+        } else {
+            container
+        }
+    }
+
+    private fun buildOneHandContainer(
+        keyboard: LinearLayout, keyColor: Int, height: Int, radius: Int, palette: IntArray
+    ): LinearLayout {
+        val outer = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(4), dp(4), dp(4), dp(4))
+            background = GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                intArrayOf(palette[0], palette[1])
+            )
+        }
+        val controls = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+        }
+        addOneHandControl(controls, "⛶", keyColor, height) {
+            oneHandMode = false
+            refreshKeyboard()
+        }
+        addOneHandControl(controls, if (oneHandOnLeft) "›" else "‹", keyColor, height) {
+            oneHandOnLeft = !oneHandOnLeft
+            refreshKeyboard()
+        }
+        addOneHandControl(controls, "↔", keyColor, height) {
+            oneHandOnLeft = !oneHandOnLeft
+            refreshKeyboard()
+        }
+        val keyboardParams = LinearLayout.LayoutParams(0, -2, 1f)
+        val controlsParams = LinearLayout.LayoutParams(dp(48), -2)
+        if (oneHandOnLeft) {
+            outer.addView(keyboard, keyboardParams)
+            outer.addView(controls, controlsParams)
+        } else {
+            outer.addView(controls, controlsParams)
+            outer.addView(keyboard, keyboardParams)
+        }
+        return outer
+    }
+
+    private fun addOneHandControl(
+        parent: LinearLayout, label: String, keyColor: Int, height: Int, action: () -> Unit
+    ) {
+        val dark = keyColor == 0xFF222033.toInt()
+        val control = TextView(this).apply {
+            text = label
+            gravity = Gravity.CENTER
+            textSize = 23f
+            setTextColor(if (dark) Color.WHITE else 0xFF29243A.toInt())
+            background = GradientDrawable().apply {
+                setColor(keyColor)
+                cornerRadius = dp(24).toFloat()
+            }
+            setOnClickListener { action() }
+        }
+        parent.addView(control, LinearLayout.LayoutParams(dp(42), dp(48)).apply {
+            setMargins(dp(2), dp(5), dp(2), dp(5))
+        })
     }
 
     private fun addToolbar(parent: LinearLayout, keyColor: Int, height: Int, radius: Int) {
@@ -254,13 +320,20 @@ class KeyboardService : InputMethodService() {
             }
             pair.forEach { title ->
                 addSpecialKey(row, title, 1f, keyColor, height, radius) {
-                    if (title == "Изменение текста") {
-                        menuPanel = false
-                        textEditMode = true
-                        selectMode = false
-                        refreshKeyboard()
-                    } else {
-                        Toast.makeText(this, "$title — скоро будет добавлено", Toast.LENGTH_SHORT).show()
+                    when (title) {
+                        "Изменение текста" -> {
+                            menuPanel = false
+                            textEditMode = true
+                            selectMode = false
+                            refreshKeyboard()
+                        }
+                        "Режим одной руки" -> {
+                            menuPanel = false
+                            oneHandMode = true
+                            oneHandOnLeft = false
+                            refreshKeyboard()
+                        }
+                        else -> Toast.makeText(this, "$title — скоро будет добавлено", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
