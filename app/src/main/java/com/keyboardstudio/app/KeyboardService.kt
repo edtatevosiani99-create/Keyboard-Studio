@@ -338,7 +338,35 @@ class KeyboardService : InputMethodService() {
         row: LinearLayout, label: String, weight: Float, keyColor: Int,
         height: Int, radius: Int = 12, action: () -> Unit
     ) {
-        addKey(row, label, weight, keyColor, height, radius, action)
+        val dark = keyColor == 0xFF222033.toInt()
+        val key = TextView(this).apply {
+            text = label
+            gravity = Gravity.CENTER
+            textSize = when {
+                label.length > 12 -> 13f
+                label.length > 5 -> 15f
+                else -> 21f
+            }
+            setTextColor(if (dark) Color.WHITE else 0xFF29243A.toInt())
+            background = GradientDrawable().apply {
+                setColor(keyColor)
+                cornerRadius = dp(radius).toFloat()
+                setStroke(dp(1), 0x66FFFFFF)
+            }
+            isClickable = true
+            isFocusable = true
+            setOnClickListener { action() }
+        }
+        val params = if (row.orientation == LinearLayout.VERTICAL) {
+            LinearLayout.LayoutParams(-1, dp(height)).apply {
+                setMargins(dp(2), dp(3), dp(2), dp(3))
+            }
+        } else {
+            LinearLayout.LayoutParams(0, dp(height), weight).apply {
+                setMargins(dp(2), dp(2), dp(2), dp(2))
+            }
+        }
+        row.addView(key, params)
     }
 
     private fun sendCursorKey(keyCode: Int) {
