@@ -69,7 +69,17 @@ class KeyboardService : InputMethodService() {
         intArrayOf(0xFFFF758C.toInt(), 0xFFFF7EB3.toInt()),
         intArrayOf(0xFF43CEA2.toInt(), 0xFF185A9D.toInt()),
         intArrayOf(0xFFDA22FF.toInt(), 0xFF9733EE.toInt()),
-        intArrayOf(0xFFFC4A1A.toInt(), 0xFFF7B733.toInt())
+        intArrayOf(0xFFFC4A1A.toInt(), 0xFFF7B733.toInt()),
+        // Dracula
+        intArrayOf(0xFF7A0718.toInt(), 0xFF12040A.toInt()),
+        // Minions
+        intArrayOf(0xFFFFD21F.toInt(), 0xFF0755A5.toInt()),
+        // Wolf
+        intArrayOf(0xFF69D9FF.toInt(), 0xFF071B43.toInt()),
+        // Dragon
+        intArrayOf(0xFFFF6A00.toInt(), 0xFF260707.toInt()),
+        // Cyberpunk
+        intArrayOf(0xFFFF00C8.toInt(), 0xFF062A63.toInt())
     )
     private val keyColors = intArrayOf(
         0xFFFFF1FA.toInt(), 0xFFEAFBFF.toInt(), 0xFFFFF3E9.toInt(),
@@ -129,7 +139,7 @@ class KeyboardService : InputMethodService() {
 
     private fun buildKeyboard(): View {
         val prefs = getSharedPreferences("keyboard_studio", MODE_PRIVATE)
-        val selected = prefs.getInt("selected", 0).coerceIn(0, 29)
+        val selected = prefs.getInt("selected", 0).coerceIn(0, 34)
         val palette = palettes[selected % palettes.size]
         val keyColor = keyColors[prefs.getInt("keyColor", 0).coerceIn(0, 9)]
         val baseHeight = prefs.getFloat("height", 39f).roundToInt().coerceIn(30, 54)
