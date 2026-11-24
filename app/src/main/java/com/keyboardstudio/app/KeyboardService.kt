@@ -431,25 +431,52 @@ class KeyboardService : InputMethodService() {
         }
         var downX = 0f
         var downY = 0f
+        var startWidth = oneHandWidth
+        var startHeight = oneHandHeightScale
+        var previewWidth = startWidth
+        var previewHeight = startHeight
         handle.setOnTouchListener { _, event ->
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
                     downX = event.rawX
                     downY = event.rawY
+                    startWidth = oneHandWidth
+                    startHeight = oneHandHeightScale
+                    previewWidth = startWidth
+                    previewHeight = startHeight
+                    // Keep the opposite corner fixed while the dragged corner moves.
+                    panel.pivotX = if (leftCorner) panel.width.toFloat() else 0f
+                    panel.pivotY = if (topCorner) panel.height.toFloat() else 0f
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val dx = event.rawX - downX
+                    val dy = event.rawY - downY
+                    val widthDelta = (if (leftCorner) -dx else dx) /
+                        resources.displayMetrics.widthPixels.toFloat()
+                    val heightDelta = (if (topCorner) -dy else dy) / dp(520).toFloat()
+                    previewWidth = (startWidth + widthDelta).coerceIn(0.75f, 0.90f)
+                    previewHeight = (startHeight + heightDelta).coerceIn(0.75f, 1.25f)
+
+                    // Live preview: scale the whole keyboard frame on every movement event.
+                    panel.scaleX = previewWidth / startWidth
+                    panel.scaleY = previewHeight / startHeight
                     true
                 }
                 MotionEvent.ACTION_UP -> {
-                    val dx = event.rawX - downX
-                    val dy = event.rawY - downY
-                    val widthDelta = (if (leftCorner) -dx else dx) / resources.displayMetrics.widthPixels.toFloat()
-                    val heightDelta = (if (topCorner) -dy else dy) / dp(520).toFloat()
-                    oneHandWidth = (oneHandWidth + widthDelta).coerceIn(0.75f, 0.90f)
-                    oneHandHeightScale = (oneHandHeightScale + heightDelta).coerceIn(0.75f, 1.25f)
+                    oneHandWidth = previewWidth
+                    oneHandHeightScale = previewHeight
                     oneHandPositionX = Float.NaN
+                    panel.scaleX = 1f
+                    panel.scaleY = 1f
                     refreshKeyboard()
                     true
                 }
-                MotionEvent.ACTION_CANCEL -> true
+                MotionEvent.ACTION_CANCEL -> {
+                    panel.scaleX = 1f
+                    panel.scaleY = 1f
+                    true
+                }
                 else -> false
             }
         }
