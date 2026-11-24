@@ -216,7 +216,7 @@ private fun localizedThemeName(language:String,index:Int):String =
 
 private val themes = names.mapIndexed { i, n ->
  val key = listOf(Color(0xFFFFF1FA),Color(0xFFEAFBFF),Color(0xFFFFF3E9),Color(0xFFE9FFF7),Color(0xFFF4EBFF))[i % 5]
- KTheme(n, palettes[i % palettes.size], key)
+ KTheme(n, palettes[if (i >= 30) i - 20 else i % palettes.size], key)
 }
 
 class MainActivity : ComponentActivity() {
