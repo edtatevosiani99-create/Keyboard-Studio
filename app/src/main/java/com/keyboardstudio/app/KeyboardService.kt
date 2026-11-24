@@ -10,6 +10,7 @@ import android.content.SharedPreferences
 import android.provider.Settings
 import android.widget.Toast
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
@@ -42,6 +43,9 @@ class KeyboardService : InputMethodService() {
     private var shifted = false
     private var numbers = false
     private var emojiPanel = false
+    private var menuPanel = false
+    private var textEditMode = false
+    private var selectMode = false
     private var root: LinearLayout? = null
     private val quickEmojis = listOf("😀", "😂", "🥰", "😍", "😘", "😊", "😭", "😉", "😎", "❤️", "👍", "🙏")
 
@@ -149,6 +153,14 @@ class KeyboardService : InputMethodService() {
         root = container
 
         addToolbar(container, keyColor, height, radius)
+        if (textEditMode) {
+            addTextEditingPanel(container, keyColor, height, radius)
+            return container
+        }
+        if (menuPanel) {
+            addKeyboardMenuPanel(container, keyColor, height, radius)
+            return container
+        }
         if (emojiPanel) {
             addRow(container, quickEmojis, keyColor, (height - 4).coerceAtLeast(26), radius) { emoji ->
                 commit(emoji)
@@ -223,8 +235,117 @@ class KeyboardService : InputMethodService() {
     }
 
     private fun showKeyboardMenu() {
-        emojiPanel = !emojiPanel
+        menuPanel = !menuPanel
+        emojiPanel = false
+        textEditMode = false
         refreshKeyboard()
+    }
+
+    private fun addKeyboardMenuPanel(parent: LinearLayout, keyColor: Int, height: Int, radius: Int) {
+        val items = listOf(
+            "Изменение текста", "GIF", "Режим одной руки",
+            "Эмодзи", "Тема", "Стикеры",
+            "Плавающий режим", "Изменить размер", "Автозаполнение"
+        )
+        items.chunked(2).forEach { pair ->
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER
+            }
+            pair.forEach { title ->
+                addSpecialKey(row, title, 1f, keyColor, height, radius) {
+                    if (title == "Изменение текста") {
+                        menuPanel = false
+                        textEditMode = true
+                        selectMode = false
+                        refreshKeyboard()
+                    } else {
+                        Toast.makeText(this, "$title — скоро будет добавлено", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            if (pair.size == 1) {
+                addSpecialKey(row, "", 1f, keyColor, height, radius) {}
+            }
+            val params = LinearLayout.LayoutParams(-1, -2)
+            params.bottomMargin = dp(5)
+            parent.addView(row, params)
+        }
+    }
+
+    private fun addTextEditingPanel(parent: LinearLayout, keyColor: Int, height: Int, radius: Int) {
+        val titleRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        addSpecialKey(titleRow, "←", 0.8f, keyColor, height, radius) {
+            textEditMode = false
+            selectMode = false
+            refreshKeyboard()
+        }
+        val title = TextView(this).apply {
+            text = "Редактирование текста"
+            textSize = 17f
+            gravity = Gravity.CENTER_VERTICAL
+            setTextColor(if (keyColor == 0xFF222033.toInt()) Color.WHITE else 0xFF29243A.toInt())
+        }
+        titleRow.addView(title, LinearLayout.LayoutParams(0, dp(height), 3f))
+        parent.addView(titleRow)
+
+        val grid = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+        }
+        val leftColumn = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        val middleColumn = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        val rightColumn = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        val actionColumn = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+
+        addEditKey(leftColumn, "‹", 1f, keyColor, height * 3, radius) { sendCursorKey(KeyEvent.KEYCODE_DPAD_LEFT) }
+        addEditKey(middleColumn, "⌃", 1f, keyColor, height, radius) { sendCursorKey(KeyEvent.KEYCODE_DPAD_UP) }
+        addEditKey(middleColumn, if (selectMode) "Отменить выделение" else "Выделить", 1f, keyColor, height) {
+            selectMode = !selectMode
+            refreshKeyboard()
+        }
+        addEditKey(middleColumn, "⌄", 1f, keyColor, height, radius) { sendCursorKey(KeyEvent.KEYCODE_DPAD_DOWN) }
+        addEditKey(rightColumn, "›", 1f, keyColor, height * 3, radius) { sendCursorKey(KeyEvent.KEYCODE_DPAD_RIGHT) }
+        addEditKey(actionColumn, "Выделить всё", 1f, keyColor, height) {
+            currentInputConnection?.performContextMenuAction(android.R.id.selectAll)
+        }
+        addEditKey(actionColumn, "Копировать", 1f, keyColor, height) {
+            currentInputConnection?.performContextMenuAction(android.R.id.copy)
+        }
+        addEditKey(actionColumn, "Вставить", 1f, keyColor, height) {
+            pasteFromClipboard()
+        }
+
+        listOf(leftColumn, middleColumn, rightColumn, actionColumn).forEachIndexed { index, col ->
+            val weight = if (index == 3) 1.15f else 1f
+            grid.addView(col, LinearLayout.LayoutParams(0, -2, weight).apply {
+                setMargins(dp(2), dp(2), dp(2), dp(2))
+            })
+        }
+        parent.addView(grid)
+
+        val bottom = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+        addEditKey(bottom, "К началу", 1f, keyColor, height) { sendCursorKey(KeyEvent.KEYCODE_MOVE_HOME) }
+        addEditKey(bottom, "К концу", 1f, keyColor, height) { sendCursorKey(KeyEvent.KEYCODE_MOVE_END) }
+        addEditKey(bottom, "⌫", 0.7f, keyColor, height) { deleteOne() }
+        parent.addView(bottom)
+    }
+
+    private fun addEditKey(
+        row: LinearLayout, label: String, weight: Float, keyColor: Int,
+        height: Int, radius: Int = 12, action: () -> Unit
+    ) {
+        addKey(row, label, weight, keyColor, height, radius, action)
+    }
+
+    private fun sendCursorKey(keyCode: Int) {
+        val connection = currentInputConnection ?: return
+        val meta = if (selectMode) KeyEvent.META_SHIFT_ON else 0
+        connection.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode).apply { metaState = meta })
+        connection.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode).apply { metaState = meta })
     }
 
     private fun translateSelectedText() {
