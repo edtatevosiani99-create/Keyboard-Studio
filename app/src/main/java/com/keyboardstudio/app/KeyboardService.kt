@@ -11,7 +11,9 @@ import android.provider.Settings
 import android.widget.Toast
 import android.view.Gravity
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
+import android.widget.FrameLayout
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -48,6 +50,8 @@ class KeyboardService : InputMethodService() {
     private var selectMode = false
     private var oneHandMode = false
     private var oneHandOnLeft = false
+    private var oneHandAdjustMode = false
+    private var oneHandWidth = 0.78f
     private var root: LinearLayout? = null
     private val quickEmojis = listOf("😀", "😂", "🥰", "😍", "😘", "😊", "😭", "😉", "😎", "❤️", "👍", "🙏")
 
@@ -217,51 +221,103 @@ class KeyboardService : InputMethodService() {
 
     private fun buildOneHandContainer(
         keyboard: LinearLayout, keyColor: Int, height: Int, radius: Int, palette: IntArray
-    ): LinearLayout {
-        val outer = LinearLayout(this).apply {
+    ): FrameLayout {
+        val frame = FrameLayout(this).apply {
+            layoutParams = LinearLayout.LayoutParams(-1, -2)
+            setBackgroundColor(Color.TRANSPARENT)
+        }
+        val group = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(4), dp(4), dp(4), dp(4))
             background = GradientDrawable(
                 GradientDrawable.Orientation.TL_BR,
                 intArrayOf(palette[0], palette[1])
-            )
+            ).apply { cornerRadius = dp(14).toFloat() }
         }
         val controls = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
         }
-        addOneHandControl(controls, "⛶", keyColor, height) {
-            oneHandMode = false
-            refreshKeyboard()
-        }
-        addOneHandControl(controls, if (oneHandOnLeft) "›" else "‹", keyColor, height) {
-            oneHandOnLeft = !oneHandOnLeft
-            refreshKeyboard()
-        }
-        addOneHandControl(controls, "↔", keyColor, height) {
-            oneHandOnLeft = !oneHandOnLeft
-            refreshKeyboard()
-        }
-        val keyboardParams = LinearLayout.LayoutParams(0, -2, 4f)
-        val spacerParams = LinearLayout.LayoutParams(0, 1, 1f)
-        val controlsParams = LinearLayout.LayoutParams(dp(48), -2)
-        val spacer = View(this)
-        if (oneHandOnLeft) {
-            outer.addView(spacer, spacerParams)
-            outer.addView(keyboard, keyboardParams)
-            outer.addView(controls, controlsParams)
+
+        if (!oneHandAdjustMode) {
+            addOneHandControl(controls, "⛶", keyColor, height) {
+                oneHandMode = false
+                oneHandAdjustMode = false
+                refreshKeyboard()
+            }
+            addOneHandControl(controls, if (oneHandOnLeft) "›" else "‹", keyColor, height) {
+                oneHandOnLeft = !oneHandOnLeft
+                refreshKeyboard()
+            }
+            addOneHandControl(controls, "↕", keyColor, height) {
+                oneHandAdjustMode = true
+                refreshKeyboard()
+            }
         } else {
-            outer.addView(controls, controlsParams)
-            outer.addView(keyboard, keyboardParams)
-            outer.addView(spacer, spacerParams)
+            addOneHandControl(controls, "＋", keyColor, height) {
+                oneHandWidth = (oneHandWidth + 0.05f).coerceAtMost(0.96f)
+                refreshKeyboard()
+            }
+            addOneHandControl(controls, "－", keyColor, height) {
+                oneHandWidth = (oneHandWidth - 0.05f).coerceAtLeast(0.52f)
+                refreshKeyboard()
+            }
+            val dragHandle = addOneHandControl(controls, "✥", keyColor, height) {
+                oneHandAdjustMode = false
+                refreshKeyboard()
+            }
+            var downX = 0f
+            var downY = 0f
+            var startX = 0f
+            var startY = 0f
+            dragHandle.setOnTouchListener { view, event ->
+                when (event.actionMasked) {
+                    MotionEvent.ACTION_DOWN -> {
+                        downX = event.rawX
+                        downY = event.rawY
+                        startX = group.translationX
+                        startY = group.translationY
+                        true
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        group.translationX = startX + event.rawX - downX
+                        group.translationY = startY + event.rawY - downY
+                        true
+                    }
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> true
+                    else -> false
+                }
+            }
         }
-        return outer
+
+        val screenWidth = resources.displayMetrics.widthPixels
+        val keyboardWidth = (screenWidth * oneHandWidth).roundToInt()
+        val controlWidth = dp(48)
+        val groupWidth = keyboardWidth + controlWidth + dp(8)
+        val keyboardParams = LinearLayout.LayoutParams(keyboardWidth, -2, 0f)
+        val controlsParams = LinearLayout.LayoutParams(controlWidth, -2)
+        if (oneHandOnLeft) {
+            group.addView(keyboard, keyboardParams)
+            group.addView(controls, controlsParams)
+        } else {
+            group.addView(controls, controlsParams)
+            group.addView(keyboard, keyboardParams)
+        }
+
+        val frameParams = FrameLayout.LayoutParams(groupWidth, -2).apply {
+            gravity = (if (oneHandOnLeft) Gravity.LEFT else Gravity.RIGHT) or Gravity.BOTTOM
+            bottomMargin = dp(2)
+            leftMargin = dp(2)
+            rightMargin = dp(2)
+        }
+        frame.addView(group, frameParams)
+        return frame
     }
 
     private fun addOneHandControl(
         parent: LinearLayout, label: String, keyColor: Int, height: Int, action: () -> Unit
-    ) {
+    ): TextView {
         val dark = keyColor == 0xFF222033.toInt()
         val control = TextView(this).apply {
             text = label
@@ -271,12 +327,14 @@ class KeyboardService : InputMethodService() {
             background = GradientDrawable().apply {
                 setColor(keyColor)
                 cornerRadius = dp(24).toFloat()
+                setStroke(dp(1), 0x66FFFFFF)
             }
             setOnClickListener { action() }
         }
         parent.addView(control, LinearLayout.LayoutParams(dp(42), dp(48)).apply {
             setMargins(dp(2), dp(5), dp(2), dp(5))
         })
+        return control
     }
 
     private fun addToolbar(parent: LinearLayout, keyColor: Int, height: Int, radius: Int) {
