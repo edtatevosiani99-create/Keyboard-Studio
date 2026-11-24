@@ -49,7 +49,12 @@ private val palettes = listOf(
  listOf(Color(0xFFFFA34D),Color(0xFFFF5D83)), listOf(Color(0xFF69E6B5),Color(0xFF42B9D8)),
  listOf(Color(0xFFB66BFF),Color(0xFF633BDB)), listOf(Color(0xFFFFE66D),Color(0xFFFFA94D)),
  listOf(Color(0xFFFF758C),Color(0xFFFF7EB3)), listOf(Color(0xFF43CEA2),Color(0xFF185A9D)),
- listOf(Color(0xFFDA22FF),Color(0xFF9733EE)), listOf(Color(0xFFFC4A1A),Color(0xFFF7B733))
+ listOf(Color(0xFFDA22FF),Color(0xFF9733EE)), listOf(Color(0xFFFC4A1A),Color(0xFFF7B733)),
+ listOf(Color(0xFF7A0718),Color(0xFF12040A)),
+ listOf(Color(0xFFFFD21F),Color(0xFF0755A5)),
+ listOf(Color(0xFF69D9FF),Color(0xFF071B43)),
+ listOf(Color(0xFFFF6A00),Color(0xFF260707)),
+ listOf(Color(0xFFFF00C8),Color(0xFF062A63))
 )
 private val languages = listOf("English","ქართული","Русский","Deutsch","Español","Français","Türkçe","العربية")
 private val uiText = mapOf(
@@ -58,12 +63,12 @@ private val uiText = mapOf(
 "Interface language" to "ინტერფეისის ენა","Restore original design" to "საწყისი დიზაინის აღდგენა","Open keyboard settings" to "კლავიატურის პარამეტრების გახსნა",
 "Make your keyboard feel like you" to "შექმენი შენი უნიკალური კლავიატურა","Find your\ncolor mood." to "იპოვე შენი\nფერების განწყობა.",
 "Make it yours." to "მოირგე შენზე.","Your creations." to "შენი ნამუშევრები.","Your keyboard setup." to "შენი კლავიატურის პარამეტრები.",
-"Explore 30 colorful gradient themes." to "დაათვალიერე 30 ფერადი გრადიენტული თემა.",
+"Explore 35 colorful gradient themes." to "დაათვალიერე 30 ფერადი გრადიენტული თემა.",
 "Tune the keys and background of your preview." to "მოარგე კლავიშები და ფონი.",
 "Your saved designs stay on this device." to "შენახული დიზაინები ამ მოწყობილობაზე რჩება.",
 "Shortcuts and compatibility information." to "სწრაფი ბმულები და თავსებადობის ინფორმაცია.",
 "No saved designs yet" to "ჯერ დიზაინები შენახული არ არის","Open Customize, choose your colors and tap Save design." to "გახსენით მორგება, აირჩიეთ ფერები და დააჭირეთ შენახვას.",
-"ALL THEMES  •  30" to "ყველა თემა  •  30","LIVE PREVIEW" to "პირდაპირი წინასწარი ნახვა","KEY COLOR" to "კლავიშის ფერი",
+"ALL THEMES  •  35" to "ყველა თემა  •  30","LIVE PREVIEW" to "პირდაპირი წინასწარი ნახვა","KEY COLOR" to "კლავიშის ფერი",
 "KEY HEIGHT • %s dp" to "კლავიშის სიმაღლე • %s dp","CORNER ROUNDING • %s dp" to "კუთხეების მომრგვალება • %s dp",
 "Change background photo" to "ფონის ფოტოს შეცვლა","Choose background photo" to "ფონის ფოტოს არჩევა","Remove photo" to "ფოტოს წაშლა","Save design" to "დიზაინის შენახვა",
 "Your preview and saved settings are stored on this device. Photo backgrounds are preview-only unless a target keyboard supports importing them." to "წინასწარი ნახვა და პარამეტრები ინახება ამ მოწყობილობაზე. ფოტო მხოლოდ წინასწარ ხედში ჩანს.",
@@ -77,12 +82,12 @@ private val uiText = mapOf(
 "Interface language" to "Язык интерфейса","Restore original design" to "Вернуть исходный дизайн","Open keyboard settings" to "Открыть настройки клавиатуры",
 "Make your keyboard feel like you" to "Создай клавиатуру под себя","Find your\ncolor mood." to "Найди своё\nцветовое настроение.",
 "Make it yours." to "Настрой под себя.","Your creations." to "Твои дизайны.","Your keyboard setup." to "Настройки клавиатуры.",
-"Explore 30 colorful gradient themes." to "Выбирай из 30 ярких градиентных тем.",
+"Explore 35 colorful gradient themes." to "Выбирай из 35 ярких градиентных тем.",
 "Tune the keys and background of your preview." to "Настрой клавиши и фон клавиатуры.",
 "Your saved designs stay on this device." to "Сохранённые дизайны хранятся на этом устройстве.",
 "Shortcuts and compatibility information." to "Быстрые настройки и информация о совместимости.",
 "No saved designs yet" to "Пока нет сохранённых дизайнов","Open Customize, choose your colors and tap Save design." to "Открой «Настройка», выбери цвета и нажми «Сохранить дизайн».",
-"ALL THEMES  •  30" to "ВСЕ ТЕМЫ  •  30","LIVE PREVIEW" to "ПРЕДПРОСМОТР","KEY COLOR" to "ЦВЕТ КЛАВИШ",
+"ALL THEMES  •  35" to "ВСЕ ТЕМЫ  •  35","LIVE PREVIEW" to "ПРЕДПРОСМОТР","KEY COLOR" to "ЦВЕТ КЛАВИШ",
 "KEY HEIGHT • %s dp" to "ВЫСОТА КЛАВИШ • %s dp","CORNER ROUNDING • %s dp" to "СКРУГЛЕНИЕ УГЛОВ • %s dp",
 "Change background photo" to "Изменить фото фона","Choose background photo" to "Выбрать фото фона","Remove photo" to "Удалить фото","Save design" to "Сохранить дизайн",
 "Your preview and saved settings are stored on this device. Photo backgrounds are preview-only unless a target keyboard supports importing them." to "Предпросмотр и настройки сохраняются на этом устройстве. Фото используется только в предпросмотре.",
@@ -96,12 +101,12 @@ private val uiText = mapOf(
 "Interface language" to "Sprache der Oberfläche","Restore original design" to "Originaldesign wiederherstellen","Open keyboard settings" to "Tastatureinstellungen öffnen",
 "Make your keyboard feel like you" to "Gestalte deine persönliche Tastatur","Find your\ncolor mood." to "Finde deine\nFarbwelt.",
 "Make it yours." to "Mach sie zu deiner.","Your creations." to "Deine Designs.","Your keyboard setup." to "Deine Tastatureinstellungen.",
-"Explore 30 colorful gradient themes." to "Entdecke 30 farbenfrohe Farbverläufe.",
+"Explore 35 colorful gradient themes." to "Entdecke 35 farbenfrohe Farbverläufe.",
 "Tune the keys and background of your preview." to "Passe Tasten und Hintergrund an.",
 "Your saved designs stay on this device." to "Deine Designs bleiben auf diesem Gerät gespeichert.",
 "Shortcuts and compatibility information." to "Verknüpfungen und Kompatibilitätsinformationen.",
 "No saved designs yet" to "Noch keine Designs gespeichert","Open Customize, choose your colors and tap Save design." to "Öffne „Anpassen“, wähle Farben und tippe auf „Design speichern“. ",
-"ALL THEMES  •  30" to "ALLE DESIGNS  •  30","LIVE PREVIEW" to "LIVE-VORSCHAU","KEY COLOR" to "TASTENFARBE",
+"ALL THEMES  •  35" to "ALLE DESIGNS  •  35","LIVE PREVIEW" to "LIVE-VORSCHAU","KEY COLOR" to "TASTENFARBE",
 "KEY HEIGHT • %s dp" to "TASTENHÖHE • %s dp","CORNER ROUNDING • %s dp" to "ECKENRUNDUNG • %s dp",
 "Change background photo" to "Hintergrundfoto ändern","Choose background photo" to "Hintergrundfoto auswählen","Remove photo" to "Foto entfernen","Save design" to "Design speichern",
 "Your preview and saved settings are stored on this device. Photo backgrounds are preview-only unless a target keyboard supports importing them." to "Vorschau und Einstellungen werden auf diesem Gerät gespeichert. Fotos sind nur in der Vorschau sichtbar.",
@@ -115,12 +120,12 @@ private val uiText = mapOf(
 "Interface language" to "Idioma de la interfaz","Restore original design" to "Restaurar diseño original","Open keyboard settings" to "Abrir ajustes del teclado",
 "Make your keyboard feel like you" to "Personaliza tu teclado a tu estilo","Find your\ncolor mood." to "Encuentra tu\nestilo de color.",
 "Make it yours." to "Hazlo tuyo.","Your creations." to "Tus diseños.","Your keyboard setup." to "Configuración del teclado.",
-"Explore 30 colorful gradient themes." to "Explora 30 temas con degradados coloridos.",
+"Explore 35 colorful gradient themes." to "Explora 35 temas con degradados coloridos.",
 "Tune the keys and background of your preview." to "Ajusta las teclas y el fondo de la vista previa.",
 "Your saved designs stay on this device." to "Tus diseños se guardan en este dispositivo.",
 "Shortcuts and compatibility information." to "Accesos directos e información de compatibilidad.",
 "No saved designs yet" to "Todavía no hay diseños guardados","Open Customize, choose your colors and tap Save design." to "Abre Personalizar, elige los colores y pulsa Guardar diseño.",
-"ALL THEMES  •  30" to "TODOS LOS TEMAS  •  30","LIVE PREVIEW" to "VISTA PREVIA","KEY COLOR" to "COLOR DE TECLAS",
+"ALL THEMES  •  35" to "TODOS LOS TEMAS  •  35","LIVE PREVIEW" to "VISTA PREVIA","KEY COLOR" to "COLOR DE TECLAS",
 "KEY HEIGHT • %s dp" to "ALTURA DE TECLAS • %s dp","CORNER ROUNDING • %s dp" to "REDONDEO DE ESQUINAS • %s dp",
 "Change background photo" to "Cambiar foto de fondo","Choose background photo" to "Elegir foto de fondo","Remove photo" to "Eliminar foto","Save design" to "Guardar diseño",
 "Your preview and saved settings are stored on this device. Photo backgrounds are preview-only unless a target keyboard supports importing them." to "La vista previa y los ajustes se guardan en este dispositivo. Las fotos solo aparecen en la vista previa.",
@@ -134,12 +139,12 @@ private val uiText = mapOf(
 "Interface language" to "Langue de l’interface","Restore original design" to "Restaurer le design d’origine","Open keyboard settings" to "Ouvrir les paramètres du clavier",
 "Make your keyboard feel like you" to "Créez un clavier à votre image","Find your\ncolor mood." to "Trouvez votre\nunivers de couleurs.",
 "Make it yours." to "Personnalisez-le.","Your creations." to "Vos créations.","Your keyboard setup." to "Configuration du clavier.",
-"Explore 30 colorful gradient themes." to "Découvrez 30 thèmes dégradés colorés.",
+"Explore 35 colorful gradient themes." to "Découvrez 35 thèmes dégradés colorés.",
 "Tune the keys and background of your preview." to "Personnalisez les touches et l’arrière-plan.",
 "Your saved designs stay on this device." to "Vos créations restent sur cet appareil.",
 "Shortcuts and compatibility information." to "Raccourcis et informations de compatibilité.",
 "No saved designs yet" to "Aucun design enregistré","Open Customize, choose your colors and tap Save design." to "Ouvrez Personnaliser, choisissez vos couleurs et appuyez sur Enregistrer.",
-"ALL THEMES  •  30" to "TOUS LES THÈMES  •  30","LIVE PREVIEW" to "APERÇU EN DIRECT","KEY COLOR" to "COULEUR DES TOUCHES",
+"ALL THEMES  •  35" to "TOUS LES THÈMES  •  35","LIVE PREVIEW" to "APERÇU EN DIRECT","KEY COLOR" to "COULEUR DES TOUCHES",
 "KEY HEIGHT • %s dp" to "HAUTEUR DES TOUCHES • %s dp","CORNER ROUNDING • %s dp" to "ARRONDI DES ANGLES • %s dp",
 "Change background photo" to "Changer la photo d’arrière-plan","Choose background photo" to "Choisir une photo d’arrière-plan","Remove photo" to "Supprimer la photo","Save design" to "Enregistrer le design",
 "Your preview and saved settings are stored on this device. Photo backgrounds are preview-only unless a target keyboard supports importing them." to "L’aperçu et les réglages sont enregistrés sur cet appareil. Les photos ne sont visibles que dans l’aperçu.",
@@ -153,12 +158,12 @@ private val uiText = mapOf(
 "Interface language" to "Arayüz dili","Restore original design" to "Orijinal tasarımı geri yükle","Open keyboard settings" to "Klavye ayarlarını aç",
 "Make your keyboard feel like you" to "Klavyeni kendi tarzına göre tasarla","Find your\ncolor mood." to "Renk tarzını\nkeşfet.",
 "Make it yours." to "Kendine göre düzenle.","Your creations." to "Tasarımların.","Your keyboard setup." to "Klavye ayarların.",
-"Explore 30 colorful gradient themes." to "30 renkli geçişli temayı keşfet.",
+"Explore 35 colorful gradient themes." to "35 renkli geçişli temayı keşfet.",
 "Tune the keys and background of your preview." to "Tuşları ve arka planı düzenle.",
 "Your saved designs stay on this device." to "Kaydettiğin tasarımlar bu cihazda kalır.",
 "Shortcuts and compatibility information." to "Kısayollar ve uyumluluk bilgileri.",
 "No saved designs yet" to "Henüz kaydedilmiş tasarım yok","Open Customize, choose your colors and tap Save design." to "Özelleştir'i aç, renklerini seç ve Tasarımı kaydet'e dokun.",
-"ALL THEMES  •  30" to "TÜM TEMALAR  •  30","LIVE PREVIEW" to "CANLI ÖNİZLEME","KEY COLOR" to "TUŞ RENGİ",
+"ALL THEMES  •  35" to "TÜM TEMALAR  •  35","LIVE PREVIEW" to "CANLI ÖNİZLEME","KEY COLOR" to "TUŞ RENGİ",
 "KEY HEIGHT • %s dp" to "TUŞ YÜKSEKLİĞİ • %s dp","CORNER ROUNDING • %s dp" to "KÖŞE YUVARLAKLIĞI • %s dp",
 "Change background photo" to "Arka plan fotoğrafını değiştir","Choose background photo" to "Arka plan fotoğrafı seç","Remove photo" to "Fotoğrafı kaldır","Save design" to "Tasarımı kaydet",
 "Your preview and saved settings are stored on this device. Photo backgrounds are preview-only unless a target keyboard supports importing them." to "Önizleme ve ayarlar bu cihazda saklanır. Fotoğraflar yalnızca önizlemede görünür.",
@@ -172,12 +177,12 @@ private val uiText = mapOf(
 "Interface language" to "لغة الواجهة","Restore original design" to "استعادة التصميم الأصلي","Open keyboard settings" to "فتح إعدادات لوحة المفاتيح",
 "Make your keyboard feel like you" to "اجعل لوحة المفاتيح تعبر عنك","Find your\ncolor mood." to "اكتشف\nألوانك المفضلة.",
 "Make it yours." to "خصصها كما تحب.","Your creations." to "تصميماتك.","Your keyboard setup." to "إعدادات لوحة المفاتيح.",
-"Explore 30 colorful gradient themes." to "اكتشف 30 سمة بتدرجات لونية جميلة.",
+"Explore 35 colorful gradient themes." to "اكتشف 35 سمة بتدرجات لونية جميلة.",
 "Tune the keys and background of your preview." to "خصص الأزرار والخلفية في المعاينة.",
 "Your saved designs stay on this device." to "تبقى تصميماتك المحفوظة على هذا الجهاز.",
 "Shortcuts and compatibility information." to "اختصارات ومعلومات التوافق.",
 "No saved designs yet" to "لا توجد تصميمات محفوظة بعد","Open Customize, choose your colors and tap Save design." to "افتح التخصيص واختر الألوان واضغط حفظ التصميم.",
-"ALL THEMES  •  30" to "كل السمات  •  30","LIVE PREVIEW" to "معاينة مباشرة","KEY COLOR" to "لون الأزرار",
+"ALL THEMES  •  35" to "كل السمات  •  35","LIVE PREVIEW" to "معاينة مباشرة","KEY COLOR" to "لون الأزرار",
 "KEY HEIGHT • %s dp" to "ارتفاع الأزرار • %s dp","CORNER ROUNDING • %s dp" to "استدارة الزوايا • %s dp",
 "Change background photo" to "تغيير صورة الخلفية","Choose background photo" to "اختيار صورة للخلفية","Remove photo" to "إزالة الصورة","Save design" to "حفظ التصميم",
 "Your preview and saved settings are stored on this device. Photo backgrounds are preview-only unless a target keyboard supports importing them." to "يتم حفظ المعاينة والإعدادات على هذا الجهاز. تظهر الصور في المعاينة فقط.",
@@ -194,11 +199,12 @@ private fun metricText(language:String,key:String,value:Int):String = tx(languag
 private val names = listOf(
  "Cotton Candy","Ocean Pop","Sunset","Mint Glow","Berry","Lemonade","Rose Quartz","Aqua Dream","Violet Sky","Tangerine",
  "Peach Bloom","Arctic Wave","Electric Lilac","Coral Crush","Golden Hour","Bubblegum","Blue Lagoon","Grape Soda","Mango Splash","Emerald",
- "Candy Floss","Midnight Pop","Lavender Mist","Tropical","Cherry Ice","Lime Light","Aurora","Cosmic Pink","Citrus Mix","Dreamy Purple"
+ "Candy Floss","Midnight Pop","Lavender Mist","Tropical","Cherry Ice","Lime Light","Aurora","Cosmic Pink","Citrus Mix","Dreamy Purple",
+ "Dracula","Minions","Wolf","Dragon","Cyberpunk"
 )
 private val translatedThemeNames = mapOf(
  "ქართული" to listOf("ბამბის კანფეტი","ოკეანის ტალღა","მზის ჩასვლა","პიტნის ნათება","კენკრა","ლიმონათი","ვარდის კვარცი","აკვა ოცნება","იისფერი ცა","მანდარინი","ატმის ყვავილი","არქტიკული ტალღა","ელექტრო იასამნისფერი","მარჯნის აფეთქება","ოქროს საათი","საღეჭი რეზინი","ლურჯი ლაგუნა","ყურძნის სოდა","მანგოს შხეფი","ზურმუხტი","ბამბის ნაზი","შუაღამის ნათება","ლავანდის ნისლი","ტროპიკული","ალუბლის ყინული","ლაიმის ნათება","აურორა","კოსმოსური ვარდისფერი","ციტრუსის მიქსი","ოცნების იისფერი"),
- "Русский" to listOf("Сахарная вата","Океанская волна","Закат","Мятное сияние","Ягода","Лимонад","Розовый кварц","Аква-мечта","Фиолетовое небо","Мандарин","Персиковый цвет","Арктическая волна","Электрическая сирень","Коралловый всплеск","Золотой час","Жвачка","Голубая лагуна","Виноградная газировка","Манговый всплеск","Изумруд","Сахарная нить","Полуночное сияние","Лавандовый туман","Тропики","Вишнёвый лёд","Лаймовый свет","Аврора","Космический розовый","Цитрусовый микс","Мечтательный фиолетовый"),
+ "Русский" to listOf("Сахарная вата","Океанская волна","Закат","Мятное сияние","Ягода","Лимонад","Розовый кварц","Аква-мечта","Фиолетовое небо","Мандарин","Персиковый цвет","Арктическая волна","Электрическая сирень","Коралловый всплеск","Золотой час","Жвачка","Голубая лагуна","Виноградная газировка","Манговый всплеск","Изумруд","Сахарная нить","Полуночное сияние","Лавандовый туман","Тропики","Вишнёвый лёд","Лаймовый свет","Аврора","Космический розовый","Цитрусовый микс","Мечтательный фиолетовый","Дракула","Миньоны","Волк","Дракон","Киберпанк"),
  "Deutsch" to listOf("Zuckerwatte","Ozean-Pop","Sonnenuntergang","Minzleuchten","Beere","Limonade","Rosenquarz","Aqua-Traum","Violetter Himmel","Mandarine","Pfirsichblüte","Arktische Welle","Elektrisches Flieder","Korallenrausch","Goldene Stunde","Kaugummi","Blaue Lagune","Traubenlimonade","Mango-Spritzer","Smaragd","Zuckerflocke","Mitternachtsglanz","Lavendelnebel","Tropisch","Kirsch-Eis","Limettenlicht","Aurora","Kosmisches Rosa","Zitrusmix","Traumhaftes Violett"),
  "Español" to listOf("Algodón de azúcar","Ola del océano","Atardecer","Brillo de menta","Frutos rojos","Limonada","Cuarzo rosa","Sueño aqua","Cielo violeta","Mandarina","Flor de melocotón","Ola ártica","Lila eléctrico","Explosión coral","Hora dorada","Chicle","Laguna azul","Refresco de uva","Toque de mango","Esmeralda","Nube de azúcar","Brillo de medianoche","Niebla lavanda","Tropical","Hielo de cereza","Luz lima","Aurora","Rosa cósmico","Mezcla cítrica","Violeta de ensueño"),
  "Français" to listOf("Barbe à papa","Vague océanique","Coucher de soleil","Éclat menthe","Baies","Limonade","Quartz rose","Rêve aqua","Ciel violet","Mandarine","Fleur de pêche","Vague arctique","Lilas électrique","Éclat corail","Heure dorée","Chewing-gum","Lagon bleu","Soda raisin","Éclaboussure mangue","Émeraude","Nuage sucré","Éclat de minuit","Brume lavande","Tropical","Glace cerise","Lumière citron vert","Aurore","Rose cosmique","Mélange d’agrumes","Violet rêveur"),
@@ -228,7 +234,7 @@ class MainActivity : ComponentActivity() {
 private fun Studio(openSettings: () -> Unit) {
  val context = LocalContext.current
  val prefs = remember { context.getSharedPreferences("keyboard_studio", 0) }
- var selected by remember { mutableIntStateOf(prefs.getInt("selected",0).coerceIn(0,29)) }
+ var selected by remember { mutableIntStateOf(prefs.getInt("selected",0).coerceIn(0,34)) }
  var tab by remember { mutableStateOf("Themes") }
  var language by remember { mutableStateOf(prefs.getString("language","English") ?: "English") }
  var keyHeight by remember { mutableFloatStateOf(prefs.getFloat("height",39f)) }
@@ -253,7 +259,7 @@ private fun Studio(openSettings: () -> Unit) {
  }
  fun loadDesign(id:String) {
   val parts = prefs.getString("design_$id",null)?.split(",")
-  selected = (parts?.getOrNull(0)?.toIntOrNull() ?: id.toIntOrNull() ?: selected).coerceIn(0,29)
+  selected = (parts?.getOrNull(0)?.toIntOrNull() ?: id.toIntOrNull() ?: selected).coerceIn(0,34)
   if(parts != null && parts.size >= 4) {
    keyColorIndex = (parts[1].toIntOrNull() ?: keyColorIndex).coerceIn(0,9)
    keyHeight = (parts[2].toFloatOrNull() ?: keyHeight).coerceIn(30f,54f)
@@ -282,7 +288,7 @@ private fun Studio(openSettings: () -> Unit) {
    Spacer(Modifier.height(22.dp))
    Text(tx(language,when(tab){"Themes"->"Find your\ncolor mood.";"Customize"->"Make it yours.";"My Designs"->"Your creations.";else->"Your keyboard setup."}),fontSize=31.sp,lineHeight=35.sp,fontWeight=FontWeight.ExtraBold,color=Color(0xFF28213D))
    Spacer(Modifier.height(7.dp))
-   Text(tx(language,when(tab){"Themes"->"Explore 30 colorful gradient themes.";"Customize"->"Tune the keys and background of your preview.";"My Designs"->"Your saved designs stay on this device.";else->"Shortcuts and compatibility information."}),color=Color(0xFF82798F),fontSize=14.sp)
+   Text(tx(language,when(tab){"Themes"->"Explore 35 colorful gradient themes.";"Customize"->"Tune the keys and background of your preview.";"My Designs"->"Your saved designs stay on this device.";else->"Shortcuts and compatibility information."}),color=Color(0xFF82798F),fontSize=14.sp)
    Spacer(Modifier.height(18.dp))
    when(tab) {
     "Settings" -> SettingsCard(openSettings,language,{ language=it; prefs.edit().putString("language",it).apply() },{ selected=0; keyHeight=39f; rounding=9f; keyColorIndex=0; photoUri=null; prefs.edit().putInt("selected",0).putFloat("height",39f).putFloat("rounding",9f).putInt("keyColor",0).remove("photo").apply() })
@@ -290,7 +296,7 @@ private fun Studio(openSettings: () -> Unit) {
      if(saved.isEmpty()) InfoCard(language,"No saved designs yet","Open Customize, choose your colors and tap Save design.")
      else saved.sortedDescending().forEach { id ->
       val stored = prefs.getString("design_$id",null)?.split(",")
-      val i=(stored?.getOrNull(0)?.toIntOrNull() ?: id.toIntOrNull() ?: 0).coerceIn(0,29)
+      val i=(stored?.getOrNull(0)?.toIntOrNull() ?: id.toIntOrNull() ?: 0).coerceIn(0,34)
       ThemeRow(themes[i],selected==i,language) { loadDesign(id); tab="Customize" }
       Spacer(Modifier.height(9.dp))
      }
@@ -299,7 +305,7 @@ private fun Studio(openSettings: () -> Unit) {
      KeyboardPreview(current,keyHeight.dp,rounding.dp,photoUri,language)
      Spacer(Modifier.height(20.dp))
      if(tab=="Themes") {
-      Text(tx(language,"ALL THEMES  •  30"),fontSize=11.sp,fontWeight=FontWeight.Bold,color=Color(0xFF92889F),letterSpacing=1.3.sp)
+      Text(tx(language,"ALL THEMES  •  35"),fontSize=11.sp,fontWeight=FontWeight.Bold,color=Color(0xFF92889F),letterSpacing=1.3.sp)
       Spacer(Modifier.height(12.dp))
       themes.forEachIndexed { i,t ->
        ThemeRow(t,selected==i,language) { selected=i; prefs.edit().putInt("selected",i).apply() }
