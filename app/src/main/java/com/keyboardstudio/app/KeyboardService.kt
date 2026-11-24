@@ -344,8 +344,8 @@ class KeyboardService : InputMethodService() {
     private fun sendCursorKey(keyCode: Int) {
         val connection = currentInputConnection ?: return
         val meta = if (selectMode) KeyEvent.META_SHIFT_ON else 0
-        connection.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode).apply { metaState = meta })
-        connection.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode).apply { metaState = meta })
+        connection.sendKeyEvent(KeyEvent(0, 0, KeyEvent.ACTION_DOWN, keyCode, 0, meta))
+        connection.sendKeyEvent(KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, meta))
     }
 
     private fun translateSelectedText() {
