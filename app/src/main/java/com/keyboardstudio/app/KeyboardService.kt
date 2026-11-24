@@ -202,22 +202,56 @@ class KeyboardService : InputMethodService() {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
         }
-        addSpecialKey(toolbar, "☺", 1f, keyColor, (height * 0.78f).roundToInt(), radius) {
-            emojiPanel = !emojiPanel
-            refreshKeyboard()
+        addSpecialKey(toolbar, "▦", 1f, keyColor, (height * 0.78f).roundToInt(), radius) {
+            showKeyboardMenu()
         }
         addSpecialKey(toolbar, "▤", 1f, keyColor, (height * 0.78f).roundToInt(), radius) {
             pasteFromClipboard()
         }
-        addSpecialKey(toolbar, "🌐", 1f, keyColor, (height * 0.78f).roundToInt(), radius) {
-            switchKeyboardLanguage()
+        addSpecialKey(toolbar, "文A", 1f, keyColor, (height * 0.78f).roundToInt(), radius) {
+            translateSelectedText()
         }
         addSpecialKey(toolbar, "⚙", 1f, keyColor, (height * 0.78f).roundToInt(), radius) {
             openKeyboardSettings()
         }
+        addSpecialKey(toolbar, "🎙", 1f, keyColor, (height * 0.78f).roundToInt(), radius) {
+            startVoiceInput()
+        }
         val params = LinearLayout.LayoutParams(-1, -2)
         params.bottomMargin = dp(5)
         parent.addView(toolbar, params)
+    }
+
+    private fun showKeyboardMenu() {
+        emojiPanel = !emojiPanel
+        refreshKeyboard()
+    }
+
+    private fun translateSelectedText() {
+        val selectedText = currentInputConnection?.getSelectedText(0)?.toString().orEmpty()
+        if (selectedText.isBlank()) {
+            Toast.makeText(this, "Select text first to translate", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val url = "https://translate.google.com/?sl=auto&tl=en&text=" +
+            android.net.Uri.encode(selectedText) + "&op=translate"
+        val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        runCatching { startActivity(intent) }
+            .onFailure { Toast.makeText(this, "Translation could not be opened", Toast.LENGTH_SHORT).show() }
+    }
+
+    private fun startVoiceInput() {
+        val intent = Intent("android.speech.action.RECOGNIZE_SPEECH").apply {
+            putExtra("android.speech.extra.LANGUAGE_MODEL", "free_form")
+            putExtra("android.speech.extra.PROMPT", "Speak now")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        runCatching { startActivity(intent) }
+            .onFailure {
+                Toast.makeText(this, "Voice input is not available on this device", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun pasteFromClipboard() {
