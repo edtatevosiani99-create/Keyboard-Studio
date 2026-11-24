@@ -393,8 +393,22 @@ private fun KeyboardPreview(theme:KTheme,height:Dp,rounding:Dp,uri:Uri?,language
 
 @Composable
 private fun Key(label:String,modifier:Modifier,theme:KTheme,height:Dp,rounding:Dp) {
- Box(modifier.height(height).clip(RoundedCornerShape(rounding)).background(theme.key.copy(alpha=.94f)).border(1.dp,Color.White.copy(alpha=.45f),RoundedCornerShape(rounding)),contentAlignment=Alignment.Center) {
-  Text(label,color=if(theme.key==Color(0xFF222033)) Color.White else Color(0xFF29243A),fontSize=if(label.length>2)9.sp else 13.sp,fontWeight=FontWeight.SemiBold)
+ val gothic = theme.name in setOf("Gothic Rose","Raven","Cross","Purple Gothic","Matte Black","Shadow Gold")
+ val accent = when(theme.name) {
+  "Gothic Rose" -> Color(0xFF74202B)
+  "Raven" -> Color(0xFF718196)
+  "Cross" -> Color(0xFF8B202A)
+  "Purple Gothic" -> Color(0xFF713A91)
+  "Matte Black" -> Color(0xFF111111)
+  "Shadow Gold" -> Color(0xFF9A7734)
+  else -> Color.White.copy(alpha=.45f)
+ }
+ val labelColor = if(theme.name=="Shadow Gold") Color(0xFFFFD98A) else if(gothic) Color.White else Color(0xFF29243A)
+ Box(modifier.height(height).clip(RoundedCornerShape(rounding))
+  .background(if(gothic) Color(0xFF0B090A) else theme.key.copy(alpha=.94f))
+  .border(if(theme.name=="Matte Black") 0.dp else 1.dp,if(gothic) accent else Color.White.copy(alpha=.45f),RoundedCornerShape(rounding)),
+  contentAlignment=Alignment.Center) {
+  Text(label,color=labelColor,fontSize=if(label.length>2)9.sp else 13.sp,fontWeight=FontWeight.SemiBold)
  }
 }
 
