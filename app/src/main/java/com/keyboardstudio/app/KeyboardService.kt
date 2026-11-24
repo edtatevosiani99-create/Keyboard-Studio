@@ -64,7 +64,42 @@ class KeyboardService : InputMethodService() {
     )
 
     override fun onCreateInputView(): View {
-        return buildKeyboard()
+        return createKeyboardSafely()
+    }
+
+    private fun createKeyboardSafely(): View {
+        return try {
+            buildKeyboard()
+        } catch (error: Throwable) {
+            android.util.Log.e("KeyboardStudio", "Keyboard view creation failed", error)
+            createFallbackKeyboard()
+        }
+    }
+
+    private fun createFallbackKeyboard(): View {
+        val fallback = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setPadding(dp(8), dp(8), dp(8), dp(8))
+            setBackgroundColor(0xFFEDEAF5.toInt())
+        }
+        listOf("q", "w", "e", "r", "t", "y", "u", "i", "o", "p").forEach { letter ->
+            val key = TextView(this).apply {
+                text = letter
+                textSize = 20f
+                gravity = Gravity.CENTER
+                setTextColor(Color.BLACK)
+                background = GradientDrawable().apply {
+                    setColor(Color.WHITE)
+                    cornerRadius = dp(7).toFloat()
+                }
+                setOnClickListener { currentInputConnection?.commitText(letter, 1) }
+            }
+            fallback.addView(key, LinearLayout.LayoutParams(0, dp(48), 1f).apply {
+                setMargins(dp(2), 0, dp(2), 0)
+            })
+        }
+        return fallback
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
@@ -73,7 +108,10 @@ class KeyboardService : InputMethodService() {
         refreshKeyboard()
     }
 
-    private fun refreshKeyboard() { setInputView(buildKeyboard()) }
+    private fun refreshKeyboard() {
+        runCatching { setInputView(createKeyboardSafely()) }
+            .onFailure { android.util.Log.e("KeyboardStudio", "Keyboard refresh failed", it) }
+    }
 
     private fun buildKeyboard(): LinearLayout {
         val prefs = getSharedPreferences("keyboard_studio", MODE_PRIVATE)
