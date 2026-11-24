@@ -3,7 +3,12 @@ package com.keyboardstudio.app
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.inputmethodservice.InputMethodService
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.provider.Settings
+import android.widget.Toast
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -36,7 +41,9 @@ class KeyboardService : InputMethodService() {
     private val supportedLanguages = listOf("English", "ქართული", "Русский", "Deutsch", "Español", "Français", "Türkçe", "العربية")
     private var shifted = false
     private var numbers = false
+    private var emojiPanel = false
     private var root: LinearLayout? = null
+    private val quickEmojis = listOf("😀", "😂", "🥰", "😍", "😘", "😊", "😭", "😉", "😎", "❤️", "👍", "🙏")
 
     private val palettes = listOf(
         intArrayOf(0xFFFF8FC7.toInt(), 0xFF9B8CFF.toInt()),
@@ -103,6 +110,15 @@ class KeyboardService : InputMethodService() {
         }
         root = container
 
+        addToolbar(container, keyColor, height, radius)
+        if (emojiPanel) {
+            addRow(container, quickEmojis, keyColor, (height - 4).coerceAtLeast(26), radius) { emoji ->
+                commit(emoji)
+                emojiPanel = false
+                refreshKeyboard()
+            }
+        }
+
         if (numbers) {
             addRow(container, listOf("1","2","3","4","5","6","7","8","9","0"), keyColor, height, radius)
             addRow(container, listOf("@","#","\$","%","&","-","+","(",")","/"), keyColor, height, radius)
@@ -130,7 +146,10 @@ class KeyboardService : InputMethodService() {
             numbers = !numbers
             refreshKeyboard()
         }
-        addSpecialKey(bottom, "☺", 0.8f, keyColor, height, radius) { commit("🙂") }
+        addSpecialKey(bottom, "☺", 0.8f, keyColor, height, radius) {
+            emojiPanel = !emojiPanel
+            refreshKeyboard()
+        }
         addSpecialKey(bottom, "🌐", 0.9f, keyColor, height, radius) { switchKeyboardLanguage() }
         addSpecialKey(bottom, ",", 0.6f, keyColor, height, radius) { commit(",") }
         addSpecialKey(bottom, spaceLabel, 3.2f, keyColor, height, radius) { commit(" ") }
@@ -138,6 +157,49 @@ class KeyboardService : InputMethodService() {
         addSpecialKey(bottom, "↵", 1.25f, keyColor, height, radius) { enter() }
         container.addView(bottom)
         return container
+    }
+
+    private fun addToolbar(parent: LinearLayout, keyColor: Int, height: Int, radius: Int) {
+        val toolbar = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+        }
+        addSpecialKey(toolbar, "☺", 1f, keyColor, (height * 0.78f).roundToInt(), radius) {
+            emojiPanel = !emojiPanel
+            refreshKeyboard()
+        }
+        addSpecialKey(toolbar, "▤", 1f, keyColor, (height * 0.78f).roundToInt(), radius) {
+            pasteFromClipboard()
+        }
+        addSpecialKey(toolbar, "🌐", 1f, keyColor, (height * 0.78f).roundToInt(), radius) {
+            switchKeyboardLanguage()
+        }
+        addSpecialKey(toolbar, "⚙", 1f, keyColor, (height * 0.78f).roundToInt(), radius) {
+            openKeyboardSettings()
+        }
+        val params = LinearLayout.LayoutParams(-1, -2)
+        params.bottomMargin = dp(5)
+        parent.addView(toolbar, params)
+    }
+
+    private fun pasteFromClipboard() {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = clipboard.primaryClip
+        if (clip == null || clip.itemCount == 0) {
+            Toast.makeText(this, "Clipboard is empty", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val value = clip.getItemAt(0).coerceToText(this)?.toString().orEmpty()
+        if (value.isNotEmpty()) {
+            currentInputConnection?.commitText(value, 1)
+        }
+    }
+
+    private fun openKeyboardSettings() {
+        val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        runCatching { startActivity(intent) }
     }
 
     private fun addRow(
